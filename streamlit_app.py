@@ -33,36 +33,6 @@ st.set_page_config(page_title="Formula 1 Live Hub", layout="wide", page_icon="�
 st.markdown("<h1 style='text-align: center;'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>", unsafe_allow_html=True)
 st.markdown("""Explore everything about Formula 1...""")
 
-# Pulsanti per navigare tra le pagine (ognuna si collega a una parte diversa del codice)
-menu = st.radio(
-    "Select a page",
-    ["Drivers", "Teams", "Standings", "Races", "Statistics", "Games", "Videos", "Trivia"],
-    index=0
-)
-
-if menu == "Drivers":
-    import pages.Drivers  # Carica direttamente il contenuto di Drivers.py (senza chiamare una funzione)
-
-elif menu == "Teams":
-    import pages.Teams  # Carica direttamente il contenuto di Teams.py
-
-elif menu == "Standings":
-    import pages.Standings  # Carica direttamente il contenuto di Standings.py
-
-elif menu == "Races":
-    import pages.Races  # Carica direttamente il contenuto di Races.py
-
-elif menu == "Statistics":
-    import pages.Statistics  # Carica direttamente il contenuto di Statistics.py
-
-elif menu == "Games":
-    import pages.Games  # Carica direttamente il contenuto di Games.py
-
-elif menu == "Videos":
-    import pages.Videos  # Carica direttamente il contenuto di Videos.py
-
-elif menu == "Trivia":
-    import pages.Trivia  # Carica direttamente il contenuto di Trivia.py
 
 
 # Aggiungi alcune frasi iconiche della Formula 1 con CSS personalizzato per la grafica
@@ -173,3 +143,33 @@ st.markdown('<div class="image-container"><img src="https://www.repstatic.it/con
 st.write("<br>", unsafe_allow_html=True)
 
 
+# Pulsanti per navigare tra le pagine (ognuna si collega a una parte diversa del codice)
+menu = st.radio(
+    "Select a page",
+    ["Drivers", "Teams", "Standings", "Races", "Statistics", "Games", "Videos", "Trivia"],
+    index=0
+)
+
+if menu == "Drivers":
+    import pages.Drivers  # Carica direttamente il contenuto di Drivers.py (senza chiamare una funzione)
+
+elif menu == "Teams":
+    import pages.Teams  # Carica direttamente il contenuto di Teams.py
+
+elif menu == "Standings":
+    import pages.Standings  # Carica direttamente il contenuto di Standings.py
+
+elif menu == "Races":
+    import pages.Races  # Carica direttamente il contenuto di Races.py
+
+elif menu == "Statistics":
+    import pages.Statistics  # Carica direttamente il contenuto di Statistics.py
+
+elif menu == "Games":
+    import pages.Games  # Carica direttamente il contenuto di Games.py
+
+elif menu == "Videos":
+    import pages.Videos  # Carica direttamente il contenuto di Videos.py
+
+elif menu == "Trivia":
+    import pages.Trivia  # Carica direttamente il contenuto di Trivia.py
