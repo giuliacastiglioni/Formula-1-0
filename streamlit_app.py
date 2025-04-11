@@ -133,7 +133,7 @@ st.write("<br>", unsafe_allow_html=True)
 
 
 # Pulsanti per navigare tra le pagine (ognuna si collega a una parte diversa del codice)
-menu = st.selectbox(
+menu = st.radio(
     "Select a page",
     ["Drivers", "Teams", "Standings", "Races", "Statistics", "Games", "Videos", "Trivia"],
     index=0
