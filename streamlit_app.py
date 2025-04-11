@@ -1,1 +1,1 @@
-import Formula_1.py
+import Formula_1
