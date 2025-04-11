@@ -24,17 +24,6 @@ st.markdown("<h1 class='title'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>"
 st.markdown("""Embark on a journey through the world of Formula 1! Use the menu on the left to dive into the high-speed action, legendary drivers, iconic teams, and unforgettable moments of this thrilling sport!""")
     # Pulsanti per navigare tra le pagine (ognuna si collega a una parte diversa del codice)
 
-import streamlit as st
-
-# Impostazioni di base per Streamlit
-st.set_page_config(page_title="Formula 1 Live Hub", layout="wide", page_icon="🏎️")
-
-# Intestazione dell'app
-st.markdown("<h1 style='text-align: center;'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>", unsafe_allow_html=True)
-st.markdown("""Explore everything about Formula 1...""")
-
-
-
 # Aggiungi alcune frasi iconiche della Formula 1 con CSS personalizzato per la grafica
 st.markdown("""
     <style>
