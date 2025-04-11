@@ -130,3 +130,28 @@ st.markdown('<div class="image-container"><img src="https://www.repstatic.it/con
 
 # Separa le immagini e i testi con un po' di spazio
 st.write("<br>", unsafe_allow_html=True)
+
+# Menu Selectbox con opzioni
+menu = st.selectbox(
+    "Select a page",
+    ["Drivers", "Teams", "Standings", "Races", "Statistics", "Games", "Videos", "Trivia"],
+    index=0
+)
+
+# Funzione per caricare la pagina selezionata
+if menu == "Drivers":
+    st.write("Pagina Drivers")
+elif menu == "Teams":
+    st.write("Pagina Teams")
+elif menu == "Standings":
+    st.write("Pagina Standings")
+elif menu == "Races":
+    st.write("Pagina Races")
+elif menu == "Statistics":
+    st.write("Pagina Statistics")
+elif menu == "Games":
+    st.write("Pagina Games")
+elif menu == "Videos":
+    st.write("Pagina Videos")
+elif menu == "Trivia":
+    st.write("Pagina Trivia")
