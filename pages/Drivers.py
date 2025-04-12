@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Carica e visualizza l'icona sopra il titolo
 #st.image("/workspaces/Formula-1-0/Assets/icons/helmet_1850740.png", width=100)  # Puoi regolare la larghezza come preferisci
@@ -15,12 +16,20 @@ We'll include statistics, bios, comparisons, and more.
 
 
 
-# Carica i dati (assumiamo che i CSV siano caricati in variabili dataframes)
-drivers_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/drivers.csv')
-driver_standings_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/driver_standings.csv')
-results_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/results.csv')
-races_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/races.csv')
+# Ottieni il percorso assoluto della cartella corrente
+current_directory = os.getcwd()
 
+# Crea il percorso assoluto per ogni file CSV
+drivers_path = os.path.join(current_directory, 'Datasets', 'drivers.csv')
+driver_standings_path = os.path.join(current_directory, 'Datasets', 'driver_standings.csv')
+results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
+races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
+
+# Carica i file CSV
+drivers_df = pd.read_csv(drivers_path)
+driver_standings_df = pd.read_csv(driver_standings_path)
+results_df = pd.read_csv(results_path)
+races_df = pd.read_csv(races_path)
 
 
 # Funzione per estrarre i piloti che soddisfano i criteri
