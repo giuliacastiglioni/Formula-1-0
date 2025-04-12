@@ -16,10 +16,10 @@ We'll include statistics, bios, comparisons, and more.
 
 
 # Carica i dati (assumiamo che i CSV siano caricati in variabili dataframes)
-drivers_df = pd.read_csv('/workspaces/Formula-1-0/Datasets/drivers.csv')
-driver_standings_df = pd.read_csv('/workspaces/Formula-1-0/Datasets/driver_standings.csv')
-results_df = pd.read_csv('/workspaces/Formula-1-0/Datasets/results.csv')
-races_df = pd.read_csv('/workspaces/Formula-1-0/Datasets/races.csv')
+drivers_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/drivers.csv')
+driver_standings_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/driver_standings.csv')
+results_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/results.csv')
+races_df = pd.read_csv('./workspaces/Formula-1-0/Datasets/races.csv')
 
 
 
