@@ -133,9 +133,9 @@ def reaction_time_challenge():
             st.write("🔴 Wait...")
         else:
             reaction = st.session_state.reaction_time
-            if reaction < 0.5:
+            if reaction < 0.67:
                 color = "🟢 Perfect!"
-            elif reaction < 0.74:
+            elif reaction < 0.77:
                 color = "🟡 Not bad..."
             else:
                 color = "🔴 Too Slow!"
