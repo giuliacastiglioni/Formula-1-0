@@ -3,6 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
 
 # Carica e visualizza l'icona sopra il titolo
 #st.image("/workspaces/Formula-1-0/Assets/icons/helmet_1850740.png", width=100)  # Puoi regolare la larghezza come preferisci
@@ -10,8 +13,8 @@ import os
 st.title("Drivers")
 
 st.write("""
-Here you’ll find all the current Formula 1 drivers.  
-We'll include statistics, bios, comparisons, and more.
+Here you’ll find an overview of all the Formula 1 drivers.  
+We'll include statistics, comparisons, and more!
 """)
 
 
@@ -24,13 +27,13 @@ drivers_path = os.path.join(current_directory, 'Datasets', 'drivers.csv')
 driver_standings_path = os.path.join(current_directory, 'Datasets', 'driver_standings.csv')
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
-
+qualifying_path = os.path.join(current_directory, 'Datasets', 'qualifying.csv')
 # Carica i file CSV
 drivers_df = pd.read_csv(drivers_path)
 driver_standings_df = pd.read_csv(driver_standings_path)
 results_df = pd.read_csv(results_path)
 races_df = pd.read_csv(races_path)
-
+qualifying_df = pd.read_csv(qualifying_path)
 
 # Funzione per estrarre i piloti che soddisfano i criteri
 def get_drivers_by_period(period):
@@ -156,72 +159,201 @@ def analyze_performance_by_period(period):
 
     return performance
 
-# Funzione per visualizzare i grafici con uno stile adatto
 def plot_performance(performance, period):
     st.write(f"### Average Position, Victories and Podiums for {period}")
+    # Filtra righe con '\N' o altri valori non numerici
+    performance.replace('\\N', np.nan, inplace=True)
+    performance.dropna(inplace=True)
+
     st.dataframe(performance)
 
-    # Line chart per visualizzare la posizione media nel tempo per ciascun pilota
-    st.write("**Average Position (Lower is Better)**")
-    fig, ax = plt.subplots(figsize=(10, 6))
-    performance.set_index('code')['Average Position'].plot(kind='line', color='red', marker='o', ax=ax)
-    ax.set_title(f'Average Position per Driver in {period}', fontsize=16)
-    ax.set_ylabel('Average Position', fontsize=12)
-    ax.set_xlabel('Driver Code', fontsize=12)
-    ax.grid(True, linestyle='--', color='white', alpha=0.3)
-    st.pyplot(fig)
+    # Ordina per posizione media (la più bassa è la migliore)
+    performance_sorted = performance.sort_values('Average Position', ascending=True)
 
-    # Bar chart per il numero di vittorie e podi
-    fig, ax = plt.subplots(figsize=(10, 6))
-    performance.set_index('code')[['Victories', 'Podiums']].plot(kind='bar', stacked=True, color=['gold', 'silver'], ax=ax)
-    ax.set_title(f'Victories and Podiums per Driver in {period}', fontsize=16)
-    ax.set_ylabel('Count', fontsize=12)
-    ax.set_xlabel('Driver Code', fontsize=12)
-    ax.grid(True, linestyle='--', color='white', alpha=0.3)
-    st.pyplot(fig)
+    # Grafico interattivo - posizione media
+    fig_line = px.line(
+        performance_sorted,
+        x='code',
+        y='Average Position',
+        markers=True,
+        title=f'Average Position per Driver in {period}',
+    )
+    fig_line.update_traces(line=dict(color='red'))
+    fig_line.update_yaxes(autorange='reversed', title='Average Position')
+    fig_line.update_xaxes(title='Driver Code')
+    fig_line.update_layout(
+        title_font_size=16,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white')
+    )
+    st.plotly_chart(fig_line, use_container_width=True)
 
-# Funzione per analizzare l'evoluzione di un pilota nel tempo
+    # Grafico interattivo - vittorie e podi
+    fig_bar = go.Figure()
+    fig_bar.add_trace(go.Bar(
+        x=performance['code'],
+        y=performance['Victories'],
+        name='Victories',
+        marker_color='gold'
+    ))
+    fig_bar.add_trace(go.Bar(
+        x=performance['code'],
+        y=performance['Podiums'],
+        name='Podiums',
+        marker_color='silver'
+    ))
+
+    fig_bar.update_layout(
+        barmode='stack',
+        title=f'Victories and Podiums per Driver in {period}',
+        xaxis_title='Driver Code',
+        yaxis_title='Count',
+        title_font_size=16,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white')
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+# Funzione per ottenere il nome del pilota
+def get_driver_name(driver_id):
+    driver_row = drivers_df.loc[drivers_df['driverId'] == driver_id].iloc[0]
+    return f"{driver_row['forename']} {driver_row['surname']}"
+
+# Analisi evoluzione posizione media
 def analyze_driver_evolution(driver_id):
     results_driver = results_df[results_df['driverId'] == driver_id]
     results_driver = results_driver.merge(races_df[['raceId', 'year']], on='raceId')
-    avg_position_per_year = results_driver.groupby('year')['positionOrder'].mean()
+    avg_position_per_year = results_driver.groupby('year')['positionOrder'].mean().reset_index()
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    avg_position_per_year.plot(kind='line', marker='o', color='red', ax=ax)
-    ax.set_title(f'Evolution of Driver {driver_id} Performance Over Time', fontsize=16)
-    ax.set_ylabel('Average Position', fontsize=12)
-    ax.set_xlabel('Year', fontsize=12)
-    ax.grid(True, linestyle='--', color='white', alpha=0.3)
-    st.pyplot(fig)
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.line(avg_position_per_year, x='year', y='positionOrder', markers=True,
+                  title=f'Evolution of {driver_name}\'s Performance Over Time',
+                  labels={'positionOrder': 'Average Finish Position', 'year': 'Year'})
+    fig.update_yaxes(autorange='reversed')  # Inverti asse Y
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# Analisi vittorie
+def analyze_driver_wins(driver_id):
+    results_driver = results_df[results_df['driverId'] == driver_id]
+    results_driver = results_driver.merge(races_df[['raceId', 'year']], on='raceId')
+    wins_per_year = results_driver[results_driver['positionOrder'] == 1].groupby('year').size().reset_index(name='wins')
+
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.bar(wins_per_year, x='year', y='wins',
+                 title=f'Number of Wins per Year for {driver_name}',
+                 labels={'wins': 'Number of Wins', 'year': 'Year'},
+                 color_discrete_sequence=['green'])
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# Analisi podi
+def analyze_driver_podiums(driver_id):
+    results_driver = results_df[results_df['driverId'] == driver_id]
+    results_driver = results_driver.merge(races_df[['raceId', 'year']], on='raceId')
+    podiums_per_year = results_driver[results_driver['positionOrder'] <= 3].groupby('year').size().reset_index(name='podiums')
+
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.bar(podiums_per_year, x='year', y='podiums',
+                 title=f'Number of Podium Finishes per Year for {driver_name}',
+                 labels={'podiums': 'Number of Podiums', 'year': 'Year'},
+                 color_discrete_sequence=['blue'])
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# Analisi qualifiche
+def analyze_driver_qualifying(driver_id):
+    driver_quali = qualifying_df[qualifying_df['driverId'] == driver_id]
+    driver_quali = driver_quali.merge(races_df[['raceId', 'year']], on='raceId')
+    avg_quali_per_year = driver_quali.groupby('year')['position'].mean().reset_index()
+
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.line(avg_quali_per_year, x='year', y='position', markers=True,
+                  title=f'Average Qualifying Position per Year for {driver_name}',
+                  labels={'position': 'Average Qualifying Position', 'year': 'Year'},
+                  color_discrete_sequence=['orange'])
+    fig.update_yaxes(autorange='reversed')  # Inverti asse Y
+    st.plotly_chart(fig, use_container_width=True)
+
+# Analisi punti
+def analyze_driver_points(driver_id):
+    driver_results = results_df[results_df['driverId'] == driver_id]
+    driver_results = driver_results.merge(races_df[['raceId', 'year']], on='raceId')
+    points_per_year = driver_results.groupby('year')['points'].sum().reset_index()
+
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.bar(points_per_year, x='year', y='points',
+                 title=f'Total Points per Year for {driver_name}',
+                 labels={'points': 'Points', 'year': 'Year'},
+                 color_discrete_sequence=['purple'])
+    st.plotly_chart(fig, use_container_width=True)
+
+# Comparazione con compagni di squadra
+def compare_driver_with_teammates(driver_id):
+    driver_results = results_df[results_df['driverId'] == driver_id]
+    driver_results = driver_results.merge(races_df[['raceId', 'year']], on='raceId')
+
+    teammate_results = results_df.merge(races_df[['raceId', 'year']], on='raceId')
+    teammate_results = teammate_results[teammate_results['raceId'].isin(driver_results['raceId'])]
+
+    merged = pd.merge(driver_results[['raceId', 'constructorId']], teammate_results, on=['raceId', 'constructorId'])
+    merged = merged[merged['driverId'] != driver_id]
+
+    teammate_avg = merged.groupby('year')['positionOrder'].mean().reset_index(name='Teammates')
+    driver_avg = driver_results.groupby('year')['positionOrder'].mean().reset_index(name='Driver')
+
+    merged_df = pd.merge(driver_avg, teammate_avg, on='year')
+
+    driver_name = get_driver_name(driver_id)
+
+    fig = px.line(merged_df, x='year', y=['Driver', 'Teammates'],
+                  title=f'{driver_name} vs. Teammates: Average Finish Position per Year',
+                  labels={'value': 'Average Finish Position', 'year': 'Year', 'variable': 'Legend'},
+                  markers=True)
+    fig.update_yaxes(autorange='reversed')
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def compare_drivers(period):
     # Ottieni la performance dei piloti per il periodo specificato
     performance = analyze_performance_by_period(period)
-    
-    # Crea un grafico a barre per le vittorie
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Ordina i piloti in base al numero di vittorie
+
+    # Filtra eventuali valori non validi
+    performance = performance[performance['Victories'] != '\\N']
+    performance = performance.copy()
+    performance['Victories'] = performance['Victories'].astype(int)
+
+    # Ordina per numero di vittorie
     performance.sort_values(by='Victories', ascending=False, inplace=True)
-    
-    # Usa il 'code' dei piloti come etichetta per l'asse X
-    performance['Victories'].plot(kind='bar', color='gold', ax=ax)
-    
-    # Imposta il titolo, etichette degli assi e altre proprietà del grafico
-    ax.set_title(f'Victories per Driver in {period}', fontsize=16)
-    ax.set_ylabel('Victories', fontsize=12)
-    ax.set_xlabel('Driver (Code)', fontsize=12)
-    
-    # Aggiungi i codici dei piloti all'asse X
-    ax.set_xticks(range(len(performance)))
-    ax.set_xticklabels(performance['code'], rotation=45, ha='right', fontsize=10)
-    
-    # Aggiungi una griglia e imposta il suo stile
-    ax.grid(True, linestyle='--', color='white', alpha=0.3)
-    
-    # Mostra il grafico
-    st.pyplot(fig)
+
+    # Bar chart interattiva con Plotly
+    fig = px.bar(
+        performance,
+        x='code',
+        y='Victories',
+        title=f'Victories per Driver in {period}',
+        labels={'code': 'Driver (Code)', 'Victories': 'Number of Victories'},
+        color_discrete_sequence=['gold']
+    )
+
+    fig.update_layout(
+        xaxis_title='Driver (Code)',
+        yaxis_title='Victories',
+        title_font_size=18,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white'),
+        xaxis_tickangle=45
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
     
 # Visualizza i piloti in base al periodo selezionato
 def display_drivers_by_period():
@@ -246,7 +378,7 @@ def display_drivers_by_period():
         st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Points']])
         return
     # Mostra il criterio
-    st.write(f"**Criteria for {period}:** {criterion}")
+    st.subheader(f"**{period}:** {criterion}")
     
     # Mostra i piloti con il numero di gare vinte, mondiali o punti
     if period == "1950-1980":
@@ -262,14 +394,47 @@ def display_drivers_by_period():
     analyze_performance_by_period(period)
     plot_performance(performance, period)
     compare_drivers(period)
-    # Scegli il pilota per analizzare l'evoluzione
-    driver_name = st.selectbox("Select a Driver", drivers_df['forename'] + ' ' + drivers_df['surname'])
-    driver_id = drivers_df[drivers_df['forename'] + ' ' + drivers_df['surname'] == driver_name].iloc[0]['driverId']
-    analyze_driver_evolution(driver_id)
-    
+    st.subheader(f"Driver dashboard - Single driver analysis")
+    # Lista driver disponibili
+    drivers_list = drivers_df[['driverId', 'surname']].drop_duplicates()
+    drivers_list['label'] = drivers_list['surname'] + ' (' + drivers_list['driverId'].astype(str) + ')'
+    driver_selected = st.selectbox("Select a Driver", drivers_list['label'].values)
+    # Ottieni driverId selezionato
+    driver_id = int(driver_selected.split('(')[-1].strip(')'))
 
+    analysis_type = st.selectbox(
+        "Choose an analysis type",
+        (
+            'Evolution over time (race finish position)',
+            'Number of Wins per Year',
+            'Number of Podium Finishes per Year',
+            'Average qualifying position per year',
+            'Total points per year',
+            'Comparison with teammates'
+        )
+    )
+
+    st.markdown("---")
+
+    # Mostra il grafico corrispondente
+    if analysis_type == 'Evolution over time (race finish position)':
+        analyze_driver_evolution(driver_id)
+    elif analysis_type == 'Number of Wins per Year':
+        analyze_driver_wins(driver_id)
+    elif analysis_type == 'Number of Podium Finishes per Year':
+        analyze_driver_podiums(driver_id)
+    elif analysis_type == 'Average qualifying position per year':
+        analyze_driver_qualifying(driver_id)
+    elif analysis_type == 'Total points per year':
+        analyze_driver_points(driver_id)
+    elif analysis_type == 'Comparison with teammates':
+        compare_driver_with_teammates(driver_id)
 # Esegui la funzione
 display_drivers_by_period()
+
+
+
+
 
 
 
