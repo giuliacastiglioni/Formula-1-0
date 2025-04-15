@@ -39,7 +39,7 @@ def pitstop_challenge():
 
     elif st.session_state.step == 1:
         st.write("🔧 **Cambio gomme in corso...**")
-        time.sleep(random.uniform(0.5, 2.5))
+        time.sleep(random.uniform(0.5, 1.5))
         if st.button("✅ Cambio completato!"):
             elapsed = time.time() - st.session_state.start_time
             st.session_state.times.append(elapsed)
@@ -49,7 +49,7 @@ def pitstop_challenge():
 
     elif st.session_state.step == 2:
         st.write("⛽ **Rifornimento in corso...**")
-        time.sleep(random.uniform(0.5, 2))
+        time.sleep(random.uniform(0.5, 1.5))
         if st.button("✅ Rifornimento completato!"):
             elapsed = time.time() - st.session_state.start_time
             st.session_state.times.append(elapsed)
@@ -133,9 +133,9 @@ def reaction_time_challenge():
             st.write("🔴 Wait...")
         else:
             reaction = st.session_state.reaction_time
-            if reaction < 0.25:
+            if reaction < 0.64:
                 color = "🟢 Perfect!"
-            elif reaction < 0.4:
+            elif reaction < 0.74:
                 color = "🟡 Not bad..."
             else:
                 color = "🔴 Too Slow!"
