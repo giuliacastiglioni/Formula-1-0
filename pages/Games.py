@@ -12,7 +12,7 @@ Have fun with interactive quizzes and games:
 """)
 
 # SELEZIONE GIOCO
-game_choice = st.radio("Choose your Game:", ["F1 Pitstop Challenge", "Reaction Time Challenge", "Box Strategy"])
+game_choice = st.radio("Choose your Game:", ["F1 Pitstop Challenge", "Reaction Time Challenge", "Box Strategy","Formula 1 Manager Simulation"])
 
 # ========== GIOCO 1: PITSTOP CHALLENGE ==========
 
@@ -278,6 +278,80 @@ def box_strategy():
             st.session_state.current_box_question = 0
             st.rerun()
 
+# Dati dei piloti (Esempio)
+drivers = [
+    "Max Verstappen", "Lewis Hamilton", "Charles Leclerc", "Lando Norris", 
+    "George Russell", "Oscar Piastri", "Kimi Antonelli", "Fernando Alonso", 
+    "Carlos Sainz", "Pierre Gasly"
+]
+
+gomme = ["Soft", "Medium", "Hard"]
+assetti = ["High Downforce", "Low Downforce"]
+
+# Nuovi eventi casuali
+eventi_casuali = [
+    "Safety car", "Unexpected Rain", "Technical failure", "No event", 
+    "Perfect pit stop strategy", "Team pit stop error", "Tires overheating", "Strong wind"
+]
+
+# Funzione per scegliere il pilota, la strategia delle gomme e l'assetto
+def simulazione_gara():
+    st.title("Formula 1 Manager Simulation")
+
+    # Seleziona pilota
+    pilota_scelto = st.selectbox("Choose your driver:", drivers)
+    
+    # Seleziona le gomme
+    gomme_scelte = st.selectbox("Choose tire strategy:", gomme)
+    
+    # Seleziona l'assetto
+    assetto_scelto = st.selectbox("Choose car setup:", assetti)
+
+    # Bottone per far partire la simulazione
+    if st.button("🏁 Start Race"):
+        evento = random.choice(eventi_casuali)
+
+        # Calcolo risultato base
+        if evento == "Safety car":
+            risultato = f"Safety car deployment! You gain 5 positions."
+        elif evento == "Unexpected Rain":
+            if gomme_scelte == "Soft":
+                risultato = f"Sudden rain! The soft tires lost grip, you lost 3 positions!"
+            elif gomme_scelte == "Hard":
+                risultato = f"Sudden rain! Hard tires held well, you gain 3 positions!"
+            else:
+                risultato = f"Medium tires are perfect for the rain, you maintain your position."
+        elif evento == "Technical failure":
+            risultato = f"Technical failure during the race, you lose 4 positions."
+        elif evento == "Perfect pit stop strategy":
+            risultato = f"Perfect pit stop strategy! You gain 6 positions."
+        elif evento == "Team pit stop error":
+            risultato = f"Team pit stop error! You lose 5 positions."
+        elif evento == "Tires overheating":
+            risultato = f"Tires overheating! You lose 2 positions due to reduced speed."
+        elif evento == "Strong wind":
+            risultato = f"Strong wind affects stability! You gain 1 position but your pace is slower."
+        else:
+            risultato = f"No major events! You gain 2 positions through a great strategy."
+
+        # Commento tecnico extra
+        if gomme_scelte == "Soft" and assetto_scelto == "Low Downforce":
+            risultato += f" Your low downforce setup with soft tires made your car very fast on straights but unstable in corners."
+        elif gomme_scelte == "Hard" and assetto_scelto == "High Downforce":
+            risultato += f" The hard tires with high downforce gave you great stability but lacked speed."
+        else:
+            risultato += f" A balanced setup gave you consistent performance."
+
+        # Mostra risultati solo dopo il bottone
+        st.success(f"🌀 **Race Event:** {evento}")
+        st.info(f"📊 **Result:** {risultato}")
+    # Pulsante per fare di nuovo la simulazione (Play Again)
+    if st.button("Play Again"):
+        st.rerun()  # Ricarica la pagina per iniziare una nuova simulazione
+
+
+
+
 
 # LANCIA IL GIOCO SELEZIONATO
 if game_choice == "F1 Pitstop Challenge":
@@ -286,3 +360,6 @@ elif game_choice == "Reaction Time Challenge":
     reaction_time_challenge()
 elif game_choice == "Box Strategy":
     box_strategy()
+elif game_choice == "Formula 1 Manager Simulation":
+    simulazione_gara()
+
