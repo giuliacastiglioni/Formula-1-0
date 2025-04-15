@@ -4,11 +4,7 @@ import random
 
 st.title("Games")
 st.write("""
-Have fun with interactive quizzes and games:  
-
-- 🔧 Simulatore di pitstop  
-- ⏱️ Sfida ai tempi di reazione  
-- E tanto altro!
+Have fun with interactive games! 
 """)
 
 # SELEZIONE GIOCO
