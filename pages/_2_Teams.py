@@ -10,6 +10,8 @@ st.markdown("Explore key metrics and performance trends of F1 constructors from 
 constructors = pd.read_csv("/workspaces/Formula-1-0/Datasets/constructors.csv")
 constructor_standings = pd.read_csv("/workspaces/Formula-1-0/Datasets/constructor_standings.csv")
 races = pd.read_csv("/workspaces/Formula-1-0/Datasets/races.csv")
+results = pd.read_csv("/workspaces/Formula-1-0/Datasets/results.csv")
+
 
 # Merge datasets
 constructor_standings = constructor_standings.merge(races[['raceId', 'year']], on='raceId')
@@ -81,18 +83,25 @@ st.plotly_chart(fig3, use_container_width=True)
 # Sezione 4: Bar chart per confronto selezionati
 st.subheader("🔍 Compare Constructors")
 
+# Selezione dei team
 selected_teams = st.multiselect("Select Constructors", final_standings['name'].unique())
 
+# Filtraggio in base a team selezionati e range di anni
 if selected_teams:
-    filtered_df = final_standings[final_standings['name'].isin(selected_teams)]
+    filtered_df = final_standings[
+        (final_standings['name'].isin(selected_teams)) &
+        (final_standings['year'] >= start_year) &
+        (final_standings['year'] <= end_year)
+    ]
+
     points_by_team = filtered_df.groupby(['year', 'name'])['points'].sum().reset_index()
 
+    # Grafico a barre
     fig4 = px.bar(points_by_team, x="year", y="points", color="name", barmode="group",
                   labels={"points": "Points", "year": "Year", "name": "Constructor"},
                   title=f"Selected Constructors: Final Points per Season ({start_year}–{end_year})")
     fig4.update_layout(template="plotly_dark")
     st.plotly_chart(fig4, use_container_width=True)
-
 
 # Section 5: Most Dominant per Decade
 st.subheader("👑 Dominant Constructors by Decade")
@@ -107,11 +116,18 @@ st.plotly_chart(fig5, use_container_width=True)
 
 # Section 6: Extra Stats
 st.subheader("🤔 Interesting Stats")
+st.subheader("🏁 Constructors' Championship Titles")
 
-# 🏅 Total Titles
-total_titles = constructor_standings[constructor_standings['position'] == 1].groupby('name').size().sort_values(ascending=False)
-st.markdown("### 🏅 Constructors' Championship Titles")
-st.dataframe(total_titles.rename("Titles"))
+# Prendi solo il costruttore con più punti per anno
+titles = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()
+winners = titles.loc[titles.groupby('year')['points'].idxmax()]
+
+# Conta quanti titoli ha vinto ciascun costruttore
+total_titles = winners['name'].value_counts().reset_index()
+total_titles.columns = ['Constructor', 'Titles']
+
+# Visualizza
+st.dataframe(total_titles)
 
 # 🌎 Most Consistent
 most_consistent = constructor_standings.groupby('name')['position'].mean().sort_values()
@@ -123,9 +139,3 @@ avg_points = filtered_standings.groupby('name')['points'].mean().sort_values(asc
 st.markdown(f"### 🧮 Average Points per Season ({start_year}–{end_year})")
 st.dataframe(avg_points.rename("Avg Points").round(2))
 
-# 📈 Biggest Year-over-Year Improvement
-improvement_df = filtered_standings.pivot_table(index='year', columns='name', values='points')
-delta = improvement_df.diff().dropna()
-max_improvements = delta.max().sort_values(ascending=False).head(10)
-st.markdown(f"### 📈 Biggest Year-over-Year Improvements ({start_year}–{end_year})")
-st.dataframe(max_improvements.rename("Max Point Gain").round(1))
