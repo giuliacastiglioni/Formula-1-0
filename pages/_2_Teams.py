@@ -14,7 +14,7 @@ current_directory = os.getcwd()
 constructors_path = os.path.join(current_directory, 'Datasets', 'constructors.csv')
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
-constructor_standings_path = os.path.join(current_directory, 'Datasets', 'constructors_standings.csv')
+constructor_standings_path = os.path.join(current_directory, 'Datasets', 'constructor_standings.csv')
 
 # Carica i file CSV
 constructors = pd.read_csv(constructors_path)
