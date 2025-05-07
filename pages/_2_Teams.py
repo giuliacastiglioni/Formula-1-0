@@ -7,6 +7,9 @@ st.set_page_config(page_title="Teams", page_icon="🏎️")
 st.title("Constructor Performance Analysis")
 st.markdown("Explore key metrics and performance trends of F1 constructors from 1950 to today.")
 
+# Ottieni il percorso assoluto della cartella corrente
+current_directory = os.getcwd()
+
 # Crea il percorso assoluto per ogni file CSV
 constructors_path = os.path.join(current_directory, 'Datasets', 'constructors.csv')
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
