@@ -1,12 +1,24 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import os
 
-# Load data
-races = pd.read_csv("/workspaces/Formula-1-0/Datasets/races.csv")
-circuits = pd.read_csv("/workspaces/Formula-1-0/Datasets/circuits.csv")
-results = pd.read_csv("/workspaces/Formula-1-0/Datasets/results.csv")
-drivers = pd.read_csv("/workspaces/Formula-1-0/Datasets/drivers.csv")
+# Ottieni il percorso assoluto della cartella corrente
+current_directory = os.getcwd()
+
+# Crea il percorso assoluto per ogni file CSV
+drivers_path = os.path.join(current_directory, 'Datasets', 'drivers.csv')
+driver_standings_path = os.path.join(current_directory, 'Datasets', 'driver_standings.csv')
+results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
+races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
+circuits_path = os.path.join(current_directory, 'Datasets', 'circuits.csv')
+
+
+# Carica i file CSV
+drivers = pd.read_csv(drivers_path)
+results = pd.read_csv(results_path)
+races = pd.read_csv(races_path)
+circuits = pd.read_csv(circuits_path)
 
 # Merge races with circuits
 races_with_circuits = races.merge(circuits, on="circuitId", suffixes=('_race', '_circuit'))

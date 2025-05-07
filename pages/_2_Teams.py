@@ -1,17 +1,23 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 
 st.set_page_config(page_title="Teams", page_icon="🏎️")
 st.title("Constructor Performance Analysis")
 st.markdown("Explore key metrics and performance trends of F1 constructors from 1950 to today.")
 
-# Load data
-constructors = pd.read_csv("/workspaces/Formula-1-0/Datasets/constructors.csv")
-constructor_standings = pd.read_csv("/workspaces/Formula-1-0/Datasets/constructor_standings.csv")
-races = pd.read_csv("/workspaces/Formula-1-0/Datasets/races.csv")
-results = pd.read_csv("/workspaces/Formula-1-0/Datasets/results.csv")
+# Crea il percorso assoluto per ogni file CSV
+constructors_path = os.path.join(current_directory, 'Datasets', 'constructors.csv')
+results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
+races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
+constructor_standings_path = os.path.join(current_directory, 'Datasets', 'constructors_standings.csv')
 
+# Carica i file CSV
+constructors = pd.read_csv(constructors_path)
+results = pd.read_csv(results_path)
+races = pd.read_csv(races_path)
+constructor_standings = pd.read_csv(constructor_standings_path)
 
 # Merge datasets
 constructor_standings = constructor_standings.merge(races[['raceId', 'year']], on='raceId')
