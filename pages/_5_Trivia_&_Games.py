@@ -222,7 +222,7 @@ if st.button("Restart Trivia"):
     st.session_state.score = 0
     st.rerun()
 
-st.title("Games")
+st.write("Games!")
 st.write("""
 Have fun with interactive games! 
 """)
