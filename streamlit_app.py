@@ -9,20 +9,25 @@ st.markdown("""
         @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
         
         .title {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', serif;
+            font-style: italic;
             text-align: center;
             font-size: 3rem;
             color: #FF5733;  /* Un bel colore arancione per il titolo */
         }
+
+
     </style>
 """, unsafe_allow_html=True)
 
 # Intestazione dell'app con il nuovo font
 st.markdown("<h1 class='title'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>", unsafe_allow_html=True)
 
+
 # Descrizione
-st.markdown("""Embark on a journey through the world of Formula 1! Use the menu on the left to dive into the high-speed action, legendary drivers, iconic teams, and unforgettable moments of this thrilling sport!""")
-    # Pulsanti per navigare tra le pagine (ognuna si collega a una parte diversa del codice)
+st.markdown("""Embark on a journey through the world of Formula 1! Use the menu below to dive into the high-speed action, legendary drivers, iconic teams, and unforgettable moments of this thrilling sport!""")
+
+
 
 # Aggiungi alcune frasi iconiche della Formula 1 con CSS personalizzato per la grafica
 st.markdown("""
@@ -57,7 +62,7 @@ st.markdown("""
         }
 
         .image-container p {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Georgia', sans-serif;
             font-size: 14px;
             color: white;
             margin-top: 10px;
