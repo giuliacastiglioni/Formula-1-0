@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import plotly.express as px
 import os
 
 # Ottieni il percorso assoluto della cartella corrente
@@ -62,13 +63,13 @@ circuit_map = pdk.Deck(
 st.pydeck_chart(circuit_map)
 
 # First race per circuit
-st.subheader("📆 First Grand Prix on Each Circuit")
-first_race = races_with_circuits.groupby('name_circuit')['year'].min().reset_index()
-first_race.columns = ['Circuit', 'First GP Year']
-st.dataframe(first_race.sort_values('First GP Year'))
+#st.subheader("📆 First Grand Prix on Each Circuit")
+#first_race = races_with_circuits.groupby('name_circuit')['year'].min().reset_index()
+#first_race.columns = ['Circuit', 'First GP Year']
+#st.dataframe(first_race.sort_values('First GP Year'))
 
 # Longevity
-st.subheader("🧓 Longest Active Circuits")
+st.subheader("Longest Active Circuits")
 lifespan = races_with_circuits.groupby('name_circuit')['year'].agg(['min', 'max'])
 lifespan['Years Active'] = lifespan['max'] - lifespan['min']
 lifespan = lifespan.reset_index().sort_values('Years Active', ascending=False)
@@ -76,11 +77,11 @@ lifespan.columns = ['Circuit', 'First Year', 'Last Year', 'Years Active']
 st.dataframe(lifespan)
 
 # Races with same name on different circuits
-st.subheader("🔁 Races with Same Name but Different Circuits")
-same_name_diff_circuit = races.groupby('name')['circuitId'].nunique().reset_index()
-same_name_diff_circuit = same_name_diff_circuit[same_name_diff_circuit['circuitId'] > 1]
-same_name_diff_circuit.columns = ['GP Name', 'Different Circuits']
-st.dataframe(same_name_diff_circuit.sort_values('Different Circuits', ascending=False))
+#st.subheader("🔁 Races with Same Name but Different Circuits")
+#same_name_diff_circuit = races.groupby('name')['circuitId'].nunique().reset_index()
+#same_name_diff_circuit = same_name_diff_circuit[same_name_diff_circuit['circuitId'] > 1]
+#same_name_diff_circuit.columns = ['GP Name', 'Different Circuits']
+#st.dataframe(same_name_diff_circuit.sort_values('Different Circuits', ascending=False))
 
 # Circuit selector
 st.header("🔎 Circuit Details")
@@ -118,4 +119,16 @@ if selected_circuit:
 
     st.dataframe(winner_counts.head(10))
 
+    # Add histogram
+    st.subheader("📊 Wins Distribution of Top 10 Drivers on This Circuit")
+    fig = px.bar(
+        winner_counts.head(10),
+        x='Driver',
+        y='Wins',
+        color='Driver',
+        text='Wins',
+        title='Top 10 Most Frequent Winners on This Circuit'
+    )
+    fig.update_layout(xaxis_title='Driver', yaxis_title='Number of Wins', showlegend=False)
+    st.plotly_chart(fig)
 
