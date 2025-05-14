@@ -165,29 +165,29 @@ def plot_performance(performance, period):
     performance.replace('\\N', np.nan, inplace=True)
     performance.dropna(inplace=True)
 
-    st.dataframe(performance)
+    #st.dataframe(performance)
 
     # Ordina per posizione media (la più bassa è la migliore)
     performance_sorted = performance.sort_values('Average Position', ascending=True)
 
-    # Grafico interattivo - posizione media
-    fig_line = px.line(
+
+    # Grafico interattivo - posizione media (bar plot)
+    fig_bar = px.bar(
         performance_sorted,
         x='code',
         y='Average Position',
-        markers=True,
         title=f'Average Position per Driver in {period}',
+        color_discrete_sequence=['red']
     )
-    fig_line.update_traces(line=dict(color='red'))
-    fig_line.update_yaxes(autorange='reversed', title='Average Position')
-    fig_line.update_xaxes(title='Driver Code')
-    fig_line.update_layout(
+    fig_bar.update_yaxes(autorange='reversed', title='Average Position')
+    fig_bar.update_xaxes(title='Driver Code')
+    fig_bar.update_layout(
         title_font_size=16,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(color='white')
     )
-    st.plotly_chart(fig_line, use_container_width=True)
+    st.plotly_chart(fig_bar, use_container_width=True)
 
     # Grafico interattivo - vittorie e podi
     fig_bar = go.Figure()

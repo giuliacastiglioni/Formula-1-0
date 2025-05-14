@@ -56,6 +56,29 @@ final_standings = constructor_standings.merge(last_race_ids, on=['year', 'raceId
 
 # Ora possiamo calcolare correttamente punti e vittorie finali per anno
 
+# Sezione 0: Bar chart per confronto selezionati
+st.subheader("🔍 Compare Constructors")
+
+# Selezione dei team
+selected_teams = st.multiselect("Select Constructors", final_standings['name'].unique())
+
+# Filtraggio in base a team selezionati e range di anni
+if selected_teams:
+    filtered_df = final_standings[
+        (final_standings['name'].isin(selected_teams)) &
+        (final_standings['year'] >= start_year) &
+        (final_standings['year'] <= end_year)
+    ]
+
+    points_by_team = filtered_df.groupby(['year', 'name'])['points'].sum().reset_index()
+
+    # Grafico a barre
+    fig4 = px.bar(points_by_team, x="year", y="points", color="name", barmode="group",
+                  labels={"points": "Points", "year": "Year", "name": "Constructor"},
+                  title=f"Selected Constructors: Final Points per Season ({start_year}–{end_year})")
+    fig4.update_layout(template="plotly_dark")
+    st.plotly_chart(fig4, use_container_width=True)
+    
 # Section 1: Grafico punti finali
 st.subheader("📈 Constructor Points")
 yearly_points = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()
@@ -89,42 +112,20 @@ fig3.update_yaxes(autorange="reversed")
 fig3.update_layout(template="plotly_dark")
 st.plotly_chart(fig3, use_container_width=True)
 
-# Sezione 4: Bar chart per confronto selezionati
-st.subheader("🔍 Compare Constructors")
 
-# Selezione dei team
-selected_teams = st.multiselect("Select Constructors", final_standings['name'].unique())
-
-# Filtraggio in base a team selezionati e range di anni
-if selected_teams:
-    filtered_df = final_standings[
-        (final_standings['name'].isin(selected_teams)) &
-        (final_standings['year'] >= start_year) &
-        (final_standings['year'] <= end_year)
-    ]
-
-    points_by_team = filtered_df.groupby(['year', 'name'])['points'].sum().reset_index()
-
-    # Grafico a barre
-    fig4 = px.bar(points_by_team, x="year", y="points", color="name", barmode="group",
-                  labels={"points": "Points", "year": "Year", "name": "Constructor"},
-                  title=f"Selected Constructors: Final Points per Season ({start_year}–{end_year})")
-    fig4.update_layout(template="plotly_dark")
-    st.plotly_chart(fig4, use_container_width=True)
 
 # Section 5: Most Dominant per Decade
-st.subheader("👑 Dominant Constructors by Decade")
-constructor_standings['decade'] = (constructor_standings['year'] // 10) * 10
-dominant = constructor_standings.groupby(['decade', 'name'])['wins'].sum().reset_index()
-dominant = dominant.loc[dominant.groupby('decade')['wins'].idxmax()]
-fig5 = px.bar(dominant, x="decade", y="wins", color="name",
-              labels={"wins": "Total Wins", "decade": "Decade", "name": "Constructor"},
-              title="Most Successful Constructor by Decade")
-fig5.update_layout(template="plotly_dark")
-st.plotly_chart(fig5, use_container_width=True)
+#st.subheader("👑 Dominant Constructors by Decade")
+#constructor_standings['decade'] = (constructor_standings['year'] // 10) * 10
+#dominant = constructor_standings.groupby(['decade', 'name'])['wins'].sum().reset_index()
+#dominant = dominant.loc[dominant.groupby('decade')['wins'].idxmax()]
+#fig5 = px.bar(dominant, x="decade", y="wins", color="name",
+#              labels={"wins": "Total Wins", "decade": "Decade", "name": "Constructor"},
+#              title="Most Successful Constructor by Decade")
+#fig5.update_layout(template="plotly_dark")
+#st.plotly_chart(fig5, use_container_width=True)
 
 # Section 6: Extra Stats
-st.subheader("🤔 Interesting Stats")
 st.subheader("🏁 Constructors' Championship Titles")
 
 # Prendi solo il costruttore con più punti per anno
@@ -138,13 +139,5 @@ total_titles.columns = ['Constructor', 'Titles']
 # Visualizza
 st.dataframe(total_titles)
 
-# 🌎 Most Consistent
-most_consistent = constructor_standings.groupby('name')['position'].mean().sort_values()
-st.markdown("### 🌎 Most Consistent Constructors (Avg. Final Position)")
-st.dataframe(most_consistent.rename("Avg Position").round(2))
 
-# 🧮 Average Points per Season (Filtered)
-avg_points = filtered_standings.groupby('name')['points'].mean().sort_values(ascending=False)
-st.markdown(f"### 🧮 Average Points per Season ({start_year}–{end_year})")
-st.dataframe(avg_points.rename("Avg Points").round(2))
 
