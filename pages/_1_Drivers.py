@@ -432,7 +432,7 @@ def display_drivers_by_period():
 # Esegui la funzione
 display_drivers_by_period()
 
-st.title("Qualifing")
+st.title("Qualyfing")
 
 st.write("""
 Dive into advanced race analytics: lap times, qualifying stats, and many more.
