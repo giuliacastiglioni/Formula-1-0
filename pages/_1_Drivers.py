@@ -357,34 +357,34 @@ def compare_drivers(period):
     
 # Visualizza i piloti in base al periodo selezionato
 def display_drivers_by_period():
-    period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
-    drivers_ids, result_or_points, criterion = get_drivers_by_period(period)
+    #period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
+    #drivers_ids, result_or_points, criterion = get_drivers_by_period(period)
     
     # Filtra i piloti dal dataframe dei piloti
-    selected_drivers = drivers_df[drivers_df['driverId'].isin(drivers_ids)]
+    #selected_drivers = drivers_df[drivers_df['driverId'].isin(drivers_ids)]
     # Aggiungi il numero di mondiali o gare vinte per ogni pilota
-    if period == "1950-1980":
-        world_titles = result_or_points
-        selected_drivers['World Titles'] = selected_drivers['driverId'].map(world_titles).fillna(0).astype(int)
-        selected_drivers = selected_drivers.sort_values(by='World Titles', ascending=False)
-    elif period in ["1981-2008", "2009-2013", "2014-2023"]:
-        race_wins_count = result_or_points
-        selected_drivers['Race Wins'] = selected_drivers['driverId'].map(race_wins_count).fillna(0).astype(int)
-        selected_drivers = selected_drivers.sort_values(by='Race Wins', ascending=False)
-    elif period == "2024":
-        selected_drivers['Points'] = selected_drivers['driverId'].map(result_or_points).fillna(0).astype(int)
-        selected_drivers = selected_drivers.sort_values(by='Points', ascending=False)  # Ordinamento in base ai punti
-        st.write(f"**Criteria for {period}:** {criterion}")
-        st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Points']])
-        return
+    #if period == "1950-1980":
+    #    world_titles = result_or_points
+    #    selected_drivers['World Titles'] = selected_drivers['driverId'].map(world_titles).fillna(0).astype(int)
+    #    selected_drivers = selected_drivers.sort_values(by='World Titles', ascending=False)
+    #elif period in ["1981-2008", "2009-2013", "2014-2023"]:
+    #    race_wins_count = result_or_points
+    #    selected_drivers['Race Wins'] = selected_drivers['driverId'].map(race_wins_count).fillna(0).astype(int)
+    #    selected_drivers = selected_drivers.sort_values(by='Race Wins', ascending=False)
+    #elif period == "2024":
+    #    selected_drivers['Points'] = selected_drivers['driverId'].map(result_or_points).fillna(0).astype(int)
+    #    selected_drivers = selected_drivers.sort_values(by='Points', ascending=False)  # Ordinamento in base ai punti
+    #    st.write(f"**Criteria for {period}:** {criterion}")
+    #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Points']])
+    #    return
     # Mostra il criterio
-    st.subheader(f"**{period}:** {criterion}")
+    #st.subheader(f"**{period}:** {criterion}")
     
     # Mostra i piloti con il numero di gare vinte, mondiali o punti
-    if period == "1950-1980":
-        st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'World Titles']])
-    elif period in ["1981-2008", "2009-2013","2014-2023"]:
-        st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
+    #if period == "1950-1980":
+    #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'World Titles']])
+    #elif period in ["1981-2008", "2009-2013","2014-2023"]:
+    #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
 
     # Visualizza le statistiche in una sezione separata
     st.title("Drivers statistics")
