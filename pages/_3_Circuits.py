@@ -112,8 +112,8 @@ if selected_circuit:
     - [Wikipedia Link]({c_info['url']})
     """)
 
-    st.markdown("Years with races on this circuit:")
-    st.write(sorted(c_races['year'].unique()))
+   # st.markdown("Years with races on this circuit:")
+    #st.write(sorted(c_races['year'].unique()))
 
     # Most frequent winners
     st.subheader("Most Frequent Winners on this Circuit")
@@ -129,15 +129,15 @@ if selected_circuit:
     st.dataframe(winner_counts.head(10))
 
     # Add histogram
-    st.subheader("Wins Distribution of Top 10 Drivers on This Circuit")
-    fig = px.bar(
-        winner_counts.head(10),
-        x='Driver',
-        y='Wins',
-        color='Driver',
-        text='Wins',
-        title='Top 10 Most Frequent Winners on This Circuit'
-    )
-    fig.update_layout(xaxis_title='Driver', yaxis_title='Number of Wins', showlegend=False)
-    st.plotly_chart(fig)
+    #st.subheader("Wins Distribution of Top 10 Drivers on This Circuit")
+    #fig = px.bar(
+    #    winner_counts.head(10),
+    #    x='Driver',
+    #    y='Wins',
+    #    color='Driver',
+     #   text='Wins',
+    #    title='Top 10 Most Frequent Winners on This Circuit'
+    #)
+    #fig.update_layout(xaxis_title='Driver', yaxis_title='Number of Wins', showlegend=False)
+    #st.plotly_chart(fig)
 
