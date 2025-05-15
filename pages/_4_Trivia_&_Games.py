@@ -106,7 +106,7 @@ questions = [
     },
     {
         "question": "What is the maximum number of points a driver can score in a single race, excluding sprint races?",
-        "options": ["25", "30", "50", "100"],
+        "options": ["25", "24", "26", "20"],
         "answer": "26",
         "fun_fact": "Fun Fact: The maximum points a driver can earn in a regular race is 26, including the extra point for the fastest lap!"
     },
