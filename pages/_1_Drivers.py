@@ -33,12 +33,16 @@ driver_standings_path = os.path.join(current_directory, 'Datasets', 'driver_stan
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
 qualifying_path = os.path.join(current_directory, 'Datasets', 'qualifying.csv')
+circuits_path = os.path.join(current_directory, 'Datasets', 'circuits.csv')
+
 # Carica i file CSV
 drivers_df = pd.read_csv(drivers_path)
 driver_standings_df = pd.read_csv(driver_standings_path)
 results_df = pd.read_csv(results_path)
 races_df = pd.read_csv(races_path)
 qualifying_df = pd.read_csv(qualifying_path)
+circuits_df = pd.read_csv(circuits_path)
+
 
 # Funzione per estrarre i piloti che soddisfano i criteri
 def get_drivers_by_period(period):
@@ -356,6 +360,37 @@ def compare_drivers(period):
 
     st.plotly_chart(fig, use_container_width=True)
 
+def plot_driver_wins_by_circuit(driver_id):
+    # Filtra le gare vinte dal pilota
+    driver_wins = results_df[
+        (results_df['driverId'] == driver_id) &
+        (results_df['positionOrder'] == 1)
+    ]
+
+    # Unisci con races per ottenere circuitId
+    wins_with_race = driver_wins.merge(races_df[['raceId', 'circuitId']], on='raceId')
+
+    # Unisci con circuits per ottenere il nome del circuito
+    wins_with_circuits = wins_with_race.merge(circuits_df[['circuitId', 'name']], on='circuitId')
+
+    # Conta le vittorie per circuito
+    wins_by_circuit = wins_with_circuits['name'].value_counts().reset_index()
+    wins_by_circuit.columns = ['Circuit', 'Wins']
+
+    # Pie chart con Plotly
+    fig = px.pie(
+        wins_by_circuit,
+        names='Circuit',
+        values='Wins',
+        title=f"Wins by circuit distribution of – {get_driver_name(driver_id)}",
+        hole=0.3
+    )
+    fig.update_traces(textinfo='percent+label')
+
+    total_wins = wins_by_circuit['Wins'].sum()
+    st.write(f"**Total Wins:** {total_wins}")
+    st.plotly_chart(fig)
+
 # Visualizza i piloti in base al periodo selezionato
 def display_drivers_by_period():
     #period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
@@ -411,7 +446,8 @@ def display_drivers_by_period():
             'Number of Podium Finishes per Year',
             'Average qualifying position per year',
             'Total points per year',
-            'Comparison with teammates'
+            'Wins by circuit distribution'
+            
         )
     )
 
@@ -430,6 +466,8 @@ def display_drivers_by_period():
         analyze_driver_points(driver_id)
     elif analysis_type == 'Comparison with teammates':
         compare_driver_with_teammates(driver_id)
+    elif analysis_type == 'Wins by circuit distribution':
+        plot_driver_wins_by_circuit(driver_id)
 # Esegui la funzione
 display_drivers_by_period()
 
