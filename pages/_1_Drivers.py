@@ -324,35 +324,31 @@ def compare_drivers(period):
     # Ottieni la performance dei piloti per il periodo specificato
     performance = analyze_performance_by_period(period)
 
-    # Filtra eventuali valori non validi
+    # Filtra valori non validi e piloti senza vittorie
     performance = performance[performance['Victories'] != '\\N']
     performance = performance.copy()
     performance['Victories'] = performance['Victories'].astype(int)
+    performance = performance[performance['Victories'] > 0]
 
-    # Ordina per numero di vittorie
-    performance.sort_values(by='Victories', ascending=False, inplace=True)
-
-    # Bar chart interattiva con Plotly
-    fig = px.bar(
+    # Pie chart interattiva con Plotly
+    fig = px.pie(
         performance,
-        x='code',
-        y='Victories',
-        title=f'Victories per Driver in {period}',
-        labels={'code': 'Driver (Code)', 'Victories': 'Number of Victories'},
-        color_discrete_sequence=['gold']
+        names='code',
+        values='Victories',
+        title=f'Victories Share per Driver in {period}',
+        color_discrete_sequence=px.colors.sequential.YlOrRd
     )
 
+    fig.update_traces(textinfo='percent+label')  # Mostra percentuali e label
     fig.update_layout(
-        xaxis_title='Driver (Code)',
-        yaxis_title='Victories',
         title_font_size=18,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'),
-        xaxis_tickangle=45
+        font=dict(color='white')
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
     
 # Visualizza i piloti in base al periodo selezionato
 def display_drivers_by_period():
