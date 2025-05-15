@@ -26,12 +26,17 @@ constructor_standings = pd.read_csv(constructor_standings_path)
 constructor_standings = constructor_standings.merge(races[['raceId', 'year']], on='raceId')
 constructor_standings = constructor_standings.merge(constructors[['constructorId', 'name']], on='constructorId')
 
+
+
 # Definizione dei periodi
 periods = {
     "1950–1959": (1950, 1959),
-    "1960–1990": (1960, 1990),
-    "1991–2009": (1991, 2009),
-    "2010–2024": (2010, 2024)
+    "1960–1980": (1960, 1980),
+    "1981–1990": (1981, 1990),
+    "1991–1997": (1991, 1997),
+    "1998–2008": (1998, 2008),
+    "2009–2014": (2009, 2014),
+    "2015–2024": (2015, 2024)
 }
 
 # Selettore periodo
@@ -84,9 +89,10 @@ st.subheader("📈 Constructor Points")
 yearly_points = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()
 yearly_points = yearly_points[(yearly_points['year'] >= start_year) & (yearly_points['year'] <= end_year)]
 
-fig = px.line(yearly_points, x='year', y='points', color='name',
-              title=f"Constructor Points at End of Season ({start_year}–{end_year})",
-              labels={'points': 'Points', 'year': 'Year', 'name': 'Constructor'})
+fig = px.bar(yearly_points, x='year', y='points', color='name',
+             title=f"Constructor Points at End of Season ({start_year}–{end_year})",
+             labels={'points': 'Points', 'year': 'Year', 'name': 'Constructor'},
+             barmode="stack")  # Cambiato da "group" a "stack"
 fig.update_layout(template="plotly_dark")
 st.plotly_chart(fig, use_container_width=True)
 
@@ -96,7 +102,7 @@ st.subheader("🏆 Constructor Wins per Season")
 wins_per_year = final_standings.groupby(['year', 'name'])['wins'].sum().reset_index()
 wins_per_year = wins_per_year[(wins_per_year['year'] >= start_year) & (wins_per_year['year'] <= end_year)]
 
-fig2 = px.bar(wins_per_year, x="year", y="wins", color="name", barmode="group",
+fig2 = px.bar(wins_per_year, x="year", y="wins", color="name", barmode="stack",
               labels={"wins": "Wins", "year": "Year", "name": "Constructor"},
               title=f"Wins by Constructor at End of Season ({start_year}–{end_year})")
 fig2.update_layout(template="plotly_dark")
@@ -104,13 +110,14 @@ st.plotly_chart(fig2, use_container_width=True)
 
 
 # Section 3: Final Championship Position
-st.subheader("🎯 Final Standing Positions")
-fig3 = px.line(filtered_standings, x="year", y="position", color="name",
-               labels={"position": "Final Position", "year": "Year", "name": "Constructor"},
-               title=f"Final Positions by Constructor ({start_year}–{end_year})")
-fig3.update_yaxes(autorange="reversed")
-fig3.update_layout(template="plotly_dark")
-st.plotly_chart(fig3, use_container_width=True)
+#st.subheader("🎯 Final Standing Positions")
+#fig3 = px.bar(filtered_standings, x="year", y="position", color="name",
+#              labels={"position": "Final Position", "year": "Year", "name": "Constructor"},
+#              title=f"Final Championship Positions ({start_year}–{end_year})",
+#              barmode="group")
+#fig3.update_yaxes(autorange="reversed")
+#fig3.update_layout(template="plotly_dark")
+#st.plotly_chart(fig3, use_container_width=True)
 
 
 
@@ -125,6 +132,9 @@ st.plotly_chart(fig3, use_container_width=True)
 #fig5.update_layout(template="plotly_dark")
 #st.plotly_chart(fig5, use_container_width=True)
 
+
+
+
 # Section 6: Extra Stats
 st.subheader("🏁 Constructors' Championship Titles")
 
@@ -138,6 +148,3 @@ total_titles.columns = ['Constructor', 'Titles']
 
 # Visualizza
 st.dataframe(total_titles)
-
-
-
