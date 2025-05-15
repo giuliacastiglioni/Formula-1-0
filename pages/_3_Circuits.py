@@ -80,7 +80,7 @@ st.pydeck_chart(circuit_map)
 #st.dataframe(first_race.sort_values('First GP Year'))
 
 # Longevity
-st.subheader("Circuits overview!")
+st.subheader("Circuits overview")
 lifespan = races_with_circuits.groupby('name_circuit')['year'].agg(['min', 'max'])
 lifespan['Years Active'] = lifespan['max'] - lifespan['min']
 lifespan = lifespan.reset_index().sort_values('Years Active', ascending=False)
