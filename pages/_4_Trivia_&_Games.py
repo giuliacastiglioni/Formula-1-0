@@ -183,44 +183,52 @@ questions = [
         "fun_fact": "That was Alain Prost; Kimi was 'The Iceman' for his cool demeanor."
     }
 ]
-# Setup session state
+# Inizializza lo stato della sessione
 if "score" not in st.session_state:
     st.session_state.score = 0
+if "remaining_questions" not in st.session_state:
+    st.session_state.remaining_questions = random.sample(questions, len(questions))  # Shuffle una volta sola
 if "current_question" not in st.session_state:
-    st.session_state.current_question = random.choice(questions)
+    st.session_state.current_question = st.session_state.remaining_questions.pop(0)
 if "answered" not in st.session_state:
     st.session_state.answered = False
 
-
-
 # Trivia section
-st.subheader("F1 Trivia Time!")
-# Display score
+st.subheader("🏁 F1 Trivia Time!")
 st.write(f"Current score: {st.session_state.score}")
 
-q = st.session_state.current_question
-user_answer = st.radio(q["question"], q["options"], key=q["question"])
+# Controlla se ci sono ancora domande
+if st.session_state.current_question:
+    q = st.session_state.current_question
+    user_answer = st.radio(q["question"], q["options"], key=q["question"])
 
-# Button to submit answer
-if st.button("Submit Answer") and not st.session_state.answered:
-    if user_answer == q["answer"]:
-        st.session_state.score += 1
-        st.success(f"Correct! +1 Point! Your score: {st.session_state.score}")
-    else:
-        st.error(f"Wrong! The correct answer was **{q['answer']}**.")
-    st.info(f"🔍 {q['fun_fact']}")
-    st.session_state.answered = True
+    if st.button("Submit Answer") and not st.session_state.answered:
+        if user_answer == q["answer"]:
+            st.session_state.score += 1
+            st.success(f"Correct! +1 Point! Your score: {st.session_state.score}")
+        else:
+            st.error(f"Wrong! The correct answer was **{q['answer']}**.")
+        st.info(f"🔍 {q['fun_fact']}")
+        st.session_state.answered = True
 
-# Button to go to next question
-if st.session_state.answered:
-    if st.button("Next Question"):
-        st.session_state.current_question = random.choice(questions)
-        st.session_state.answered = False
-        
-            
-# Restart trivia button
+    if st.session_state.answered:
+        if st.button("Next Question"):
+            if st.session_state.remaining_questions:
+                st.session_state.current_question = st.session_state.remaining_questions.pop(0)
+                st.session_state.answered = False
+            else:
+                st.session_state.current_question = None  # Segnala che il quiz è finito
+
+else:
+    st.success("🎉 Hai risposto a tutte le domande!")
+    st.write(f"Punteggio finale: {st.session_state.score} su {len(questions)}")
+
+# Pulsante per ricominciare
 if st.button("Restart Trivia"):
     st.session_state.score = 0
+    st.session_state.remaining_questions = random.sample(questions, len(questions))
+    st.session_state.current_question = st.session_state.remaining_questions.pop(0)
+    st.session_state.answered = False
     st.rerun()
 
 st.subheader("Games!")
