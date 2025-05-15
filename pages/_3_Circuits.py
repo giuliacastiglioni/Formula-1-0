@@ -44,43 +44,8 @@ st.header("Global Circuit Overview")
 #most_used.columns = ['Circuit', 'Hosted GPs']
 #st.subheader("🏁 Most Frequently Used Circuits")
 #st.dataframe(most_used.head(10))
-
-# Circuit map with tooltip
-st.subheader("Interactive Circuit Map with Info")
-
-unique_circuits = circuits.drop_duplicates(subset='circuitId')
-
-circuit_map = pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=pdk.ViewState(
-        latitude=unique_circuits['lat'].mean(),
-        longitude=unique_circuits['lng'].mean(),
-        zoom=1.2,
-        pitch=0,
-    ),
-    layers=[
-        pdk.Layer(
-            'ScatterplotLayer',
-            data=unique_circuits,
-            get_position='[lng, lat]',
-            get_color='[200, 30, 0, 160]',
-            get_radius=40000,
-            pickable=True,
-        )
-    ],
-    tooltip={"text": "{name}\n{location}, {country}"}
-)
-
-st.pydeck_chart(circuit_map)
-
-# First race per circuit
-#st.subheader("📆 First Grand Prix on Each Circuit")
-#first_race = races_with_circuits.groupby('name_circuit')['year'].min().reset_index()
-#first_race.columns = ['Circuit', 'First GP Year']
-#st.dataframe(first_race.sort_values('First GP Year'))
-
+# --- costruzione lifespan ---
 # Longevity
-st.subheader("Circuits overview")
 lifespan = races_with_circuits.groupby('name_circuit')['year'].agg(['min', 'max'])
 lifespan['Years Active'] = lifespan['max'] - lifespan['min']
 lifespan = lifespan.reset_index().sort_values('Years Active', ascending=False)
@@ -119,7 +84,47 @@ best_lap_summary.columns = ['Circuit', 'Best Lap Time', 'Driver']
 # 8. Unisci con la tabella lifespan
 lifespan = lifespan.merge(best_lap_summary, on='Circuit', how='left')
 
+
+# --- merge con unique_circuits e aggiunta colore ---
+unique_circuits = circuits.drop_duplicates(subset='circuitId')
+unique_circuits = unique_circuits.merge(
+    lifespan[['Circuit', 'Last Year']],
+    left_on='name',
+    right_on='Circuit',
+    how='left'
+)
+unique_circuits['is_active'] = unique_circuits['Last Year'] == 2024
+unique_circuits['color'] = unique_circuits['is_active'].apply(
+    lambda active: [0, 200, 0, 160] if active else [200, 0, 0, 160]
+)
+
+# --- definizione della mappa ---
+circuit_map = pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+        latitude=unique_circuits['lat'].mean(),
+        longitude=unique_circuits['lng'].mean(),
+        zoom=1.2,
+        pitch=0,
+    ),
+    layers=[
+        pdk.Layer(
+            'ScatterplotLayer',
+            data=unique_circuits,
+            get_position='[lng, lat]',
+            get_color='color',
+            get_radius=40000,
+            pickable=True,
+        )
+    ],
+    tooltip={"text": "{name}\n{location}, {country}"}
+)
+
+st.pydeck_chart(circuit_map)
+
+# --- poi puoi mostrare la tabella lifespan ---
 st.dataframe(lifespan)
+
 
 # Races with same name on different circuits
 #st.subheader("🔁 Races with Same Name but Different Circuits")
