@@ -45,85 +45,85 @@ circuits_df = pd.read_csv(circuits_path)
 
 
 # Funzione per estrarre i piloti che soddisfano i criteri
-def get_drivers_by_period(period):
-    if period == "1950-1980":
-        # Piloti che hanno vinto almeno un mondiale
-        # Uniamo driver_standings_df con races_df per ottenere l'anno della gara
-        standings_with_year = pd.merge(driver_standings_df, races_df[['raceId', 'year']], on='raceId', how='left')
-        
-        # Filtro per i dati delle gare fino al 1980
-        standings_per_year = standings_with_year[standings_with_year['year'] <= 1980]
-        
-        # Sommiamo i punti per ogni pilota in ogni stagione
-        total_points_per_year = standings_per_year.groupby(['driverId', 'year'])['points'].sum().reset_index()
-        
-        # Troviamo il pilota con il punteggio massimo per ogni anno (vincitore del mondiale)
-        world_champions = total_points_per_year.loc[total_points_per_year.groupby('year')['points'].idxmax()]
+#def get_drivers_by_period(period):
+#    if period == "1950-1980":
+#        # Piloti che hanno vinto almeno un mondiale
+#        # Uniamo driver_standings_df con races_df per ottenere l'anno della gara
+#        standings_with_year = pd.merge(driver_standings_df, races_df[['raceId', 'year']], on='raceId', how='left')
+#        
+#        # Filtro per i dati delle gare fino al 1980
+#        standings_per_year = standings_with_year[standings_with_year['year'] <= 1980]
+#        
+#        # Sommiamo i punti per ogni pilota in ogni stagione
+#        total_points_per_year = standings_per_year.groupby(['driverId', 'year'])['points'].sum().reset_index()
+#        
+ #       # Troviamo il pilota con il punteggio massimo per ogni anno (vincitore del mondiale)
+#        world_champions = total_points_per_year.loc[total_points_per_year.groupby('year')['points'].idxmax()]
         
         # Estraiamo i driverId dei piloti che hanno vinto almeno un mondiale
-        drivers = world_champions['driverId'].unique()
+#        drivers = world_champions['driverId'].unique()
         
         # Numero di mondiali vinti da ciascun pilota
-        world_titles = world_champions.groupby('driverId').size()
+#        world_titles = world_champions.groupby('driverId').size()
         
-        criterion = "Drivers who have won at least one World Championship."
-    elif period == "1981-2008":
-        # Piloti con almeno 3 vittorie
-        winners = driver_standings_df[driver_standings_df['wins'] >= 3]
-        winners = winners[winners['raceId'].isin(races_df[races_df['year'].between(1981, 2008)]['raceId'])]
-        drivers = winners['driverId'].unique()
-        
+#        criterion = "Drivers who have won at least one World Championship."
+#    elif period == "1981-2008":
+#        # Piloti con almeno 3 vittorie
+#        winners = driver_standings_df[driver_standings_df['wins'] >= 3]
+#        winners = winners[winners['raceId'].isin(races_df[races_df['year'].between(1981, 2008)]['raceId'])]
+#        drivers = winners['driverId'].unique()
+#        
         # Numero di gare vinte da ciascun pilota nel periodo 1981-2008
-        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(1981, 2008)]['raceId']))]
-        race_wins = race_wins[race_wins['positionOrder'] == 1]
-        race_wins_count = race_wins.groupby('driverId').size()
+#        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(1981, 2008)]['raceId']))]
+#        race_wins = race_wins[race_wins['positionOrder'] == 1]
+#        race_wins_count = race_wins.groupby('driverId').size()
         
-        criterion = "Drivers who have won at least 3 races."
-    elif period == "2009-2013":
-        # Piloti con almeno 3 vittorie
-        winners = driver_standings_df[driver_standings_df['wins'] >= 1]
-        winners = winners[winners['raceId'].isin(races_df[races_df['year'].between(2009, 2013)]['raceId'])]
-        drivers = winners['driverId'].unique()
+#        criterion = "Drivers who have won at least 3 races."
+#    elif period == "2009-2013":
+#        # Piloti con almeno 3 vittorie
+#        winners = driver_standings_df[driver_standings_df['wins'] >= 1]
+#        winners = winners[winners['raceId'].isin(races_df[races_df['year'].between(2009, 2013)]['raceId'])]
+#        drivers = winners['driverId'].unique()
         
         # Numero di gare vinte da ciascun pilota nel periodo 2009-2013
-        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(2009, 2013)]['raceId']))]
-        race_wins = race_wins[race_wins['positionOrder'] == 1]
-        race_wins_count = race_wins.groupby('driverId').size()
+#        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(2009, 2013)]['raceId']))]
+#        race_wins = race_wins[race_wins['positionOrder'] == 1]
+#        race_wins_count = race_wins.groupby('driverId').size()
         
-        criterion = "Drivers who have won at least 1 race."
-    elif period == "2014-2023":
-        # Piloti che hanno ottenuto almeno un punto (quindi sono andati a punti)
-        drivers_with_points = driver_standings_df[driver_standings_df['points'] > 0]
-        drivers_with_points = drivers_with_points[drivers_with_points['raceId'].isin(races_df[races_df['year'].between(2014, 2023)]['raceId'])]
-        drivers = drivers_with_points['driverId'].unique()
+#        criterion = "Drivers who have won at least 1 race."
+#    elif period == "2014-2023":
+#        # Piloti che hanno ottenuto almeno un punto (quindi sono andati a punti)
+#        drivers_with_points = driver_standings_df[driver_standings_df['points'] > 0]
+#        drivers_with_points = drivers_with_points[drivers_with_points['raceId'].isin(races_df[races_df['year'].between(2014, 2023)]['raceId'])]
+#        drivers = drivers_with_points['driverId'].unique()
 
         # Numero di gare vinte da ciascun pilota nel periodo 2014-2023
-        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(2014, 2023)]['raceId']))]
-        race_wins = race_wins[race_wins['positionOrder'] == 1]
-        race_wins_count = race_wins.groupby('driverId').size()
+#        race_wins = results_df[results_df['driverId'].isin(drivers) & (results_df['raceId'].isin(races_df[races_df['year'].between(2014, 2023)]['raceId']))]
+#        race_wins = race_wins[race_wins['positionOrder'] == 1]
+#        race_wins_count = race_wins.groupby('driverId').size()
 
-        criterion = "Drivers who have scored at least one point."
+ #       criterion = "Drivers who have scored at least one point."
 
-    elif period == "2024":
+  #  elif period == "2024":
         # Tutti i piloti che hanno partecipato al 2024
-        race_ids_2024 = races_df[races_df['year'] == 2024]['raceId']
-        drivers_2024 = results_df[results_df['raceId'].isin(race_ids_2024)]['driverId'].unique()
+#        race_ids_2024 = races_df[races_df['year'] == 2024]['raceId']
+#        drivers_2024 = results_df[results_df['raceId'].isin(race_ids_2024)]['driverId'].unique()
 
         # Calcola i punti per ogni pilota nel 2024
-        points_2024 = results_df[results_df['raceId'].isin(race_ids_2024)]
-        points_2024 = points_2024.groupby('driverId')['points'].sum()
+#        points_2024 = results_df[results_df['raceId'].isin(race_ids_2024)]
+#        points_2024 = points_2024.groupby('driverId')['points'].sum()
 
-        drivers = drivers_2024
-        criterion = "All drivers who participated in the 2024 season."
+#        drivers = drivers_2024
+#        criterion = "All drivers who participated in the 2024 season."
 
         # Aggiungi i punti ottenuti a ciascun pilota nel 2024
-        return drivers, points_2024, criterion
+#        return drivers, points_2024, criterion
     
-    else:
-        drivers = []
-        criterion = "No criteria selected."
+#    else:
+#        drivers = []
+#        criterion = "No criteria selected."
 
-    return drivers, world_titles if period == "1950-1980" else race_wins_count, criterion
+#    return drivers, world_titles if period == "1950-1980" else race_wins_count, criterion
 
 def analyze_performance_by_period(period):
     # Estendere i periodi per includere più intervalli temporali
@@ -136,8 +136,8 @@ def analyze_performance_by_period(period):
     elif period == "2009-2013":
         race_ids = races_df[races_df['year'].between(2009, 2013)]['raceId']
         results_period = results_df[results_df['raceId'].isin(race_ids)]
-    elif period == "1998-2008":
-        race_ids = races_df[races_df['year'].between(1998, 2008)]['raceId']
+    elif period == "1984-2008":
+        race_ids = races_df[races_df['year'].between(1984, 2008)]['raceId']
         results_period = results_df[results_df['raceId'].isin(race_ids)]
     else:
         return pd.DataFrame(), pd.DataFrame()
@@ -392,7 +392,7 @@ def plot_driver_wins_by_circuit(driver_id):
     st.plotly_chart(fig)
 
 # Visualizza i piloti in base al periodo selezionato
-def display_drivers_by_period():
+
     #period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
     #drivers_ids, result_or_points, criterion = get_drivers_by_period(period)
     
@@ -421,16 +421,18 @@ def display_drivers_by_period():
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'World Titles']])
     #elif period in ["1981-2008", "2009-2013","2014-2023"]:
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
-
+def display_drivers_by_period():
     # Visualizza le statistiche in una sezione separata
     st.title("Drivers statistics")
     # Scegli il periodo per analizzare le performance
-    period = st.selectbox("Select the Period", ["1998-2008","2009-2013","2014-2023", "2024"])
+    period = st.selectbox("Select the Period", ["1984-2008","2009-2013","2014-2023", "2024"])
     performance = analyze_performance_by_period(period)
     analyze_performance_by_period(period)
     plot_performance(performance, period)
     compare_drivers(period)
-    st.subheader(f"Driver dashboard - Single driver analysis")
+
+
+    st.title(f"Single driver analysis")
     # Lista driver disponibili
     drivers_list = drivers_df[['driverId', 'surname']].drop_duplicates()
     drivers_list['label'] = drivers_list['surname'] + ' (' + drivers_list['driverId'].astype(str) + ')'

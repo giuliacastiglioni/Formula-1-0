@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+import random
+from matplotlib.colors import to_rgb, to_hex
+
 
 st.set_page_config(page_title="Teams", page_icon="🏎️")
 st.title("Constructor Performance Analysis")
@@ -27,12 +30,14 @@ constructors_path = os.path.join(current_directory, 'Datasets', 'constructors.cs
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
 constructor_standings_path = os.path.join(current_directory, 'Datasets', 'constructor_standings.csv')
+drivers_path = os.path.join(current_directory, 'Datasets', 'drivers.csv')
 
 # Carica i file CSV
 constructors = pd.read_csv(constructors_path)
 results = pd.read_csv(results_path)
 races = pd.read_csv(races_path)
 constructor_standings = pd.read_csv(constructor_standings_path)
+drivers = pd.read_csv(drivers_path)
 
 # Merge datasets
 constructor_standings = constructor_standings.merge(races[['raceId', 'year']], on='raceId')
@@ -179,6 +184,106 @@ st.plotly_chart(fig2, use_container_width=True)
 #st.plotly_chart(fig5, use_container_width=True)
 
 
+# Drivers belonging to the different Constructors teams
+st.subheader("Drivers belonging to the different Constructors teams")
+
+# 1. Unisci results con races per avere anno per ogni risultato
+results_with_year = results.merge(races[['raceId', 'year']], on='raceId')
+
+# 2. Filtra per anni nel periodo selezionato
+results_filtered = results_with_year[
+    (results_with_year['year'] >= start_year) &
+    (results_with_year['year'] <= end_year)
+]
+
+# 3. Raggruppa per driverId, constructorId e estrai anni unici in cui ha corso in quel team nel periodo
+driver_years = (
+    results_filtered.groupby(['driverId', 'constructorId'])['year']
+    .apply(lambda years: sorted(years.unique()))
+    .reset_index()
+)
+
+# 4. Trasforma la lista anni in stringa per tooltip
+driver_years['years_str'] = driver_years['year'].apply(lambda ylist: ", ".join(map(str, ylist)))
+
+# 5. Aggiungi nomi pilota e team
+driver_years = driver_years.merge(drivers[['driverId', 'forename', 'surname']], on='driverId')
+driver_years = driver_years.merge(constructors[['constructorId', 'name']], on='constructorId')
+
+# 6. Seleziona team da visualizzare
+team_list = sorted(driver_years['name'].unique())
+
+# Funzione per schiarire/scurire un colore (factor >1 schiarisce, <1 scurisce)
+def adjust_color_lightness(color_hex, factor):
+    rgb = to_rgb(color_hex)
+    rgb_adjusted = tuple(min(max(c * factor, 0), 1) for c in rgb)
+    return to_hex(rgb_adjusted)
+
+# Colori ufficiali team famosi F1
+team_colors = {
+    "Ferrari": "#E10600",
+    "Mercedes": "#00D2BE",
+    "Red Bull": "#1E41FF",
+    "McLaren": "#FF8700",
+    "Alpine": "#2293D1",
+    "Aston Martin": "#006F62",
+    "Williams": "#005AFF",
+}
+
+# Seleziona team da visualizzare
+team_list = sorted(driver_years['name'].unique())
+selected_team = st.selectbox("Select Constructor Team", team_list)
+
+# Colore base del team o colore random se non noto
+if selected_team in team_colors:
+    main_team_color = team_colors[selected_team]
+else:
+    main_team_color = random.choice(list(team_colors.values()))
+
+# Filtra i piloti del team selezionato
+team_drivers = driver_years[driver_years['name'] == selected_team]
+
+# Prepara etichette, genitori e hovertext
+labels = [selected_team] + [f"{row['forename']} {row['surname']}" for _, row in team_drivers.iterrows()]
+parents = [""] + [selected_team] * len(team_drivers)
+hover_texts = ["Team"] + [f"Years in team (period {selected_period}): {row['years_str']}" for _, row in team_drivers.iterrows()]
+
+# Genera gradiente colori per piloti (schiarisce il colore base)
+num_drivers = len(team_drivers)
+factors = [1 + 0.15 * i for i in range(num_drivers)]  # es: 1.0,1.15,1.3,1.45 ecc.
+driver_colors = [adjust_color_lightness(main_team_color, f) for f in factors]
+
+# Crea mappa colori associando il colore principale al team e i colori gradiente ai piloti
+color_map = {selected_team: main_team_color}
+for driver_label, color in zip(labels[1:], driver_colors):
+    color_map[driver_label] = color
+
+# DataFrame per sunburst
+df_sunburst = pd.DataFrame({
+    "labels": labels,
+    "parents": parents,
+    "hover_text": hover_texts
+})
+
+# Creazione sunburst con colori personalizzati
+fig = px.sunburst(
+    df_sunburst,
+    names='labels',
+    parents='parents',
+    hover_name='hover_text',
+    color='labels',
+    color_discrete_map=color_map,
+)
+
+fig.update_traces(hovertemplate='%{label}<br>%{hovertext}<extra></extra>')
+
+fig.update_layout(
+    margin=dict(t=40, l=0, r=0, b=0),
+    paper_bgcolor='black',
+    font=dict(color='white', size=16),
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 
 # Section 6: Extra Stats
@@ -194,3 +299,4 @@ total_titles.columns = ['Constructor', 'Titles']
 
 # Visualizza
 st.dataframe(total_titles)
+
