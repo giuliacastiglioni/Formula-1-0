@@ -13,12 +13,17 @@ import numpy as np
 st.title("Drivers")
 
 st.write("""
-Here you’ll find an overview of all the Formula 1 drivers.  
-We'll include statistics, comparisons, and more!
+Here you’ll find an overview of all the Formula 1 drivers. We'll include statistics, comparisons, and more!
 """)
 
-
-
+st.markdown(
+    f"""
+    <div style='text-align: center;'>
+        <img src="https://i.pinimg.com/originals/94/45/fb/9445fbab033edd19a32449eaaf6553eb.jpg" width="500">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 # Ottieni il percorso assoluto della cartella corrente
 current_directory = os.getcwd()
 
