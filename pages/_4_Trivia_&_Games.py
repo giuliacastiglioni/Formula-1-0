@@ -16,7 +16,7 @@ Great for both fans and newcomers.
 questions = [
     {
         "question": "Which driver holds the record for the most Formula 1 World Championships?",
-        "options": ["Michael Schumacher", "Lewis Hamilton", "Sebastian Vettel", "Juan Manuel Fangio"],
+        "options": ["Michael Schumacher", "Ayrton Senna", "Sebastian Vettel", "Juan Manuel Fangio"],
         "answer": "Michael Schumacher",
         "fun_fact": "Fun Fact: Michael Schumacher holds the record for most consecutive world titles, with 5 in a row!"
     },
