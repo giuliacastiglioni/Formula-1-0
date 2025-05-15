@@ -62,7 +62,7 @@ final_standings = constructor_standings.merge(last_race_ids, on=['year', 'raceId
 # Ora possiamo calcolare correttamente punti e vittorie finali per anno
 
 # Sezione 0: Bar chart per confronto selezionati
-st.subheader("🔍 Compare Constructors")
+st.subheader("Compare Constructors")
 
 # Selezione dei team
 selected_teams = st.multiselect("Select Constructors", final_standings['name'].unique())
@@ -85,7 +85,7 @@ if selected_teams:
     st.plotly_chart(fig4, use_container_width=True)
     
 # Section 1: Grafico punti finali
-st.subheader("📈 Constructor Points")
+st.subheader("Constructor Points")
 yearly_points = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()
 yearly_points = yearly_points[(yearly_points['year'] >= start_year) & (yearly_points['year'] <= end_year)]
 
@@ -98,7 +98,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # Section 2: Vittorie stagionali finali
-st.subheader("🏆 Constructor Wins per Season")
+st.subheader("Constructor Wins per Season")
 wins_per_year = final_standings.groupby(['year', 'name'])['wins'].sum().reset_index()
 wins_per_year = wins_per_year[(wins_per_year['year'] >= start_year) & (wins_per_year['year'] <= end_year)]
 
@@ -136,7 +136,7 @@ st.plotly_chart(fig2, use_container_width=True)
 
 
 # Section 6: Extra Stats
-st.subheader("🏁 Constructors' Championship Titles")
+st.subheader("Constructors' Championship Titles")
 
 # Prendi solo il costruttore con più punti per anno
 titles = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()

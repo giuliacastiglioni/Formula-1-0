@@ -24,6 +24,7 @@ st.markdown("""
 st.markdown("<h1 class='title'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>", unsafe_allow_html=True)
 
 
+
 # Descrizione
 st.markdown("""Embark on a journey through the world of Formula 1! Use the menu below to dive into the high-speed action, legendary drivers, iconic teams, and unforgettable moments of this thrilling sport!""")
 

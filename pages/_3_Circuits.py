@@ -24,9 +24,9 @@ circuits = pd.read_csv(circuits_path)
 # Merge races with circuits
 races_with_circuits = races.merge(circuits, on="circuitId", suffixes=('_race', '_circuit'))
 
-st.title("🏎️ F1 Circuits & Races: Stats and Fun Facts")
+st.title("F1 Circuits & Races: Stats and Fun Facts")
 
-st.header("📍 Global Circuit Overview")
+st.header("Global Circuit Overview")
 
 # Most used circuits
 #most_used = races_with_circuits['name_circuit'].value_counts().reset_index()
@@ -35,7 +35,7 @@ st.header("📍 Global Circuit Overview")
 #st.dataframe(most_used.head(10))
 
 # Circuit map with tooltip
-st.subheader("🌍 Interactive Circuit Map with Info")
+st.subheader("Interactive Circuit Map with Info")
 
 unique_circuits = circuits.drop_duplicates(subset='circuitId')
 
@@ -84,7 +84,7 @@ st.dataframe(lifespan)
 #st.dataframe(same_name_diff_circuit.sort_values('Different Circuits', ascending=False))
 
 # Circuit selector
-st.header("🔎 Circuit Details")
+st.header("Circuit Details")
 selected_circuit = st.selectbox("Select a circuit:", circuits['name'].sort_values().unique())
 
 if selected_circuit:
@@ -92,7 +92,7 @@ if selected_circuit:
     c_races = races[races['circuitId'] == c_info['circuitId']]
     race_ids = c_races['raceId'].tolist()
 
-    st.subheader(f"📄 Info about {selected_circuit}")
+    st.subheader(f"Info about {selected_circuit}")
     st.markdown(f"""
     - **Location**: {c_info['location']}, {c_info['country']}
     - **Lat/Lon**: {c_info['lat']}, {c_info['lng']}
@@ -100,14 +100,14 @@ if selected_circuit:
     - **Total GPs Hosted**: {len(c_races)}
     - **First GP**: {c_races['year'].min()}
     - **Last GP**: {c_races['year'].max()}
-    - [🌐 Wikipedia Link]({c_info['url']})
+    - [Wikipedia Link]({c_info['url']})
     """)
 
-    st.markdown("📜 Years with races on this circuit:")
-    st.write(sorted(c_races['year'].unique()))
+    #st.markdown("Years with races on this circuit:")
+    #st.write(sorted(c_races['year'].unique()))
 
     # Most frequent winners
-    st.subheader("🏆 Most Frequent Winners on this Circuit")
+    st.subheader("Most Frequent Winners on this Circuit")
     wins_on_circuit = results[
         (results['raceId'].isin(race_ids)) & 
         (results['positionOrder'] == 1)
@@ -120,7 +120,7 @@ if selected_circuit:
     st.dataframe(winner_counts.head(10))
 
     # Add histogram
-    st.subheader("📊 Wins Distribution of Top 10 Drivers on This Circuit")
+    st.subheader("Wins Distribution of Top 10 Drivers on This Circuit")
     fig = px.bar(
         winner_counts.head(10),
         x='Driver',

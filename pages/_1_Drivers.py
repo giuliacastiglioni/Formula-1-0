@@ -160,7 +160,7 @@ def analyze_performance_by_period(period):
     return performance
 
 def plot_performance(performance, period):
-    st.write(f"### Average Position, Victories and Podiums for {period}")
+    st.write(f"### Victories and Podiums for {period}")
     # Filtra righe con '\N' o altri valori non numerici
     performance.replace('\\N', np.nan, inplace=True)
     performance.dropna(inplace=True)
@@ -484,7 +484,7 @@ driver_data = df[df['surname'] == selected_driver]
 
 def quali_pos_over_time(driver_data):
     # Sezione 1: Posizione in Qualifica nel Tempo
-    st.subheader("📅 Qualifying Position Over Time")
+    st.subheader("Qualifying Position Over Time")
 
     # Controllo e pulizia dei dati
     driver_data_clean = driver_data.dropna(subset=['position', 'year'])  # Elimina righe con valori mancanti
@@ -532,7 +532,7 @@ def format_time(seconds):
 
 def best_quali_time_over_time(driver_data):
     # Sezione 2: Miglior Tempo in Qualifica
-    st.subheader("⏱️ Best Qualifying Time Over Time")
+    st.subheader("Best Qualifying Time Over Time")
 
     # Aggiungiamo le colonne formattate per Q1, Q2, Q3
     driver_data['formatted_q1'] = driver_data['q1'].apply(format_time)
@@ -568,7 +568,7 @@ def best_quali_time_over_time(driver_data):
     st.plotly_chart(fig2, use_container_width=True)
 
 def quali_vs_race(driver_data):
-    st.subheader("🔁 Qualifying vs Race Result")
+    st.subheader("Qualifying vs Race Result")
 
     # Rimuovi righe con dati mancanti
     driver_data_clean = driver_data.dropna(subset=['grid', 'positionOrder'])
@@ -617,13 +617,13 @@ def quali_vs_race(driver_data):
 
 def distrib_of_quali_pos(driver_data):
     # Sezione 4: Distribuzione Posizioni in Qualifica
-    st.subheader("📊 Distribution of Qualifying Positions")
+    st.subheader("Distribution of Qualifying Positions")
     fig4 = px.histogram(driver_data, x='position', nbins=20, title="Qualifying Position Histogram")
     st.plotly_chart(fig4, use_container_width=True)
 
 def average_quali_pos_per_circuit(driver_data):
     # Sezione 5: Performance per Circuito
-    st.subheader("🏟️ Average Qualifying Position per Circuit")
+    st.subheader("Average Qualifying Position per Circuit")
     # Raggruppa per circuito e calcola la posizione media di qualifica
     circuit_perf = driver_data.groupby('name')['position'].mean().reset_index().sort_values('position')
 
