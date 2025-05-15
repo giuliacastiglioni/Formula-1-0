@@ -96,29 +96,63 @@ if selected_teams:
     fig4.update_layout(template="plotly_dark")
     st.plotly_chart(fig4, use_container_width=True)
     
-# Section 1: Grafico punti finali
+# Section 1: Constructor Points (Only Point Scorers)
 st.subheader("Constructor Points")
+
+# Raggruppa per anno e nome, e somma i punti
 yearly_points = final_standings.groupby(['year', 'name'])['points'].sum().reset_index()
 yearly_points = yearly_points[(yearly_points['year'] >= start_year) & (yearly_points['year'] <= end_year)]
 
-fig = px.bar(yearly_points, x='year', y='points', color='name',
-             title=f"Constructor Points at End of Season ({start_year}–{end_year})",
-             labels={'points': 'Points', 'year': 'Year', 'name': 'Constructor'},
-             barmode="stack")  # Cambiato da "group" a "stack"
+# Calcola i punti totali per ogni costruttore nel periodo
+total_points = yearly_points.groupby('name')['points'].sum().reset_index()
+scoring_teams = total_points[total_points['points'] > 0]['name']
+
+# Filtra solo i team che hanno fatto almeno 1 punto
+yearly_points = yearly_points[yearly_points['name'].isin(scoring_teams)]
+
+# Crea il grafico
+fig = px.line(
+    yearly_points,
+    x='year',
+    y='points',
+    color='name',
+    markers=True,
+    title=f"Constructor Points Trend ({start_year}–{end_year}) – Only Scoring Teams",
+    labels={'points': 'Points', 'year': 'Year', 'name': 'Constructor'}
+)
 fig.update_layout(template="plotly_dark")
 st.plotly_chart(fig, use_container_width=True)
 
 
-# Section 2: Vittorie stagionali finali
-st.subheader("Constructor Wins per Season")
+# Section 2: Constructor Wins (Trend Line - Only Winners)
+st.subheader("Constructor Wins Trend")
+
+# Raggruppa e somma le vittorie
 wins_per_year = final_standings.groupby(['year', 'name'])['wins'].sum().reset_index()
 wins_per_year = wins_per_year[(wins_per_year['year'] >= start_year) & (wins_per_year['year'] <= end_year)]
 
-fig2 = px.bar(wins_per_year, x="year", y="wins", color="name", barmode="stack",
-              labels={"wins": "Wins", "year": "Year", "name": "Constructor"},
-              title=f"Wins by Constructor at End of Season ({start_year}–{end_year})")
+# Calcola il totale delle vittorie per ciascun costruttore
+total_wins = wins_per_year.groupby('name')['wins'].sum().reset_index()
+winners = total_wins[total_wins['wins'] > 0]['name']
+
+# Filtra solo i costruttori che hanno almeno una vittoria
+wins_per_year = wins_per_year[wins_per_year['name'].isin(winners)]
+
+# Crea il grafico
+fig2 = px.line(
+    wins_per_year,
+    x='year',
+    y='wins',
+    color='name',
+    markers=True,
+    title=f"Constructor Wins Trend ({start_year}–{end_year}) – Only Winners",
+    labels={'wins': 'Wins', 'year': 'Year', 'name': 'Constructor'}
+)
 fig2.update_layout(template="plotly_dark")
 st.plotly_chart(fig2, use_container_width=True)
+
+
+
 
 
 # Section 3: Final Championship Position
