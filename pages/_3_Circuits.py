@@ -112,8 +112,8 @@ if selected_circuit:
     - [Wikipedia Link]({c_info['url']})
     """)
 
-    #st.markdown("Years with races on this circuit:")
-    #st.write(sorted(c_races['year'].unique()))
+    st.markdown("Years with races on this circuit:")
+    st.write(sorted(c_races['year'].unique()))
 
     # Most frequent winners
     st.subheader("Most Frequent Winners on this Circuit")
