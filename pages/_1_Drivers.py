@@ -180,7 +180,7 @@ def plot_performance(performance, period):
         x=performance['code'],
         y=performance['Podiums'],
         name='Podiums',
-        marker_color='blue'
+        marker_color='red'
     ))
 
     fig_bar.update_layout(
