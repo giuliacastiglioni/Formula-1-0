@@ -7,6 +7,18 @@ st.set_page_config(page_title="Teams", page_icon="🏎️")
 st.title("Constructor Performance Analysis")
 st.markdown("Explore key metrics and performance trends of F1 constructors from 1950 to today.")
 
+st.markdown(
+    f"""
+    <div style='text-align: center;'>
+        <img src="https://preview.redd.it/b7mn2w7hnpv51.png?auto=webp&s=64a0d5e6e40d62d57363c321ec7185c63a286909" width="500">
+    </div>
+        """,
+    unsafe_allow_html=True
+)
+st.markdown("<br><br>", unsafe_allow_html=True)
+
+
+
 # Ottieni il percorso assoluto della cartella corrente
 current_directory = os.getcwd()
 
@@ -40,7 +52,7 @@ periods = {
 }
 
 # Selettore periodo
-selected_period = st.selectbox("Select time period", list(periods.keys()))
+selected_period = st.selectbox("Select Time period", list(periods.keys()))
 start_year, end_year = periods[selected_period]
 
 # Filtro standings per periodo selezionato

@@ -26,6 +26,15 @@ races_with_circuits = races.merge(circuits, on="circuitId", suffixes=('_race', '
 
 st.title("F1 Circuits & Races: Stats and Fun Facts")
 
+st.markdown(
+    f"""
+    <div style='text-align: center;'>
+        <img src="https://i.pinimg.com/736x/72/3e/9c/723e9c40b7f54e3d917ae43185667654--office-office-office-decor.jpg" width="400">
+    </div>
+        """,
+    unsafe_allow_html=True
+)
+
 st.header("Global Circuit Overview")
 
 # Most used circuits

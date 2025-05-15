@@ -191,11 +191,12 @@ if "current_question" not in st.session_state:
 if "answered" not in st.session_state:
     st.session_state.answered = False
 
-# Display score
-st.write(f"🏆 Current score: {st.session_state.score}")
+
 
 # Trivia section
-st.subheader("🏁 F1 Trivia Time!")
+st.subheader("F1 Trivia Time!")
+# Display score
+st.write(f"Current score: {st.session_state.score}")
 
 q = st.session_state.current_question
 user_answer = st.radio(q["question"], q["options"], key=q["question"])
@@ -204,9 +205,9 @@ user_answer = st.radio(q["question"], q["options"], key=q["question"])
 if st.button("Submit Answer") and not st.session_state.answered:
     if user_answer == q["answer"]:
         st.session_state.score += 1
-        st.success(f"🎉 Correct! +1 Point! Your score: {st.session_state.score}")
+        st.success(f"Correct! +1 Point! Your score: {st.session_state.score}")
     else:
-        st.error(f"❌ Wrong! The correct answer was **{q['answer']}**.")
+        st.error(f"Wrong! The correct answer was **{q['answer']}**.")
     st.info(f"🔍 {q['fun_fact']}")
     st.session_state.answered = True
 
