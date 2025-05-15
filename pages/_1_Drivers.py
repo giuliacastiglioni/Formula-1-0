@@ -324,8 +324,10 @@ def compare_drivers(period):
     # Ottieni la performance dei piloti per il periodo specificato
     performance = analyze_performance_by_period(period)
 
-    # Filtra valori non validi e piloti senza vittorie
-    performance = performance[performance['Victories'] != '\\N']
+    # Escludi record con codice '\N'
+    performance = performance[performance['code'] != '\\N']
+
+    # Considera solo i piloti con almeno una vittoria
     performance = performance.copy()
     performance['Victories'] = performance['Victories'].astype(int)
     performance = performance[performance['Victories'] > 0]
@@ -339,7 +341,7 @@ def compare_drivers(period):
         color_discrete_sequence=px.colors.sequential.YlOrRd
     )
 
-    fig.update_traces(textinfo='percent+label')  # Mostra percentuali e label
+    fig.update_traces(textinfo='percent+label')  # Mostra percentuali e etichette
     fig.update_layout(
         title_font_size=18,
         plot_bgcolor='rgba(0,0,0,0)',
@@ -349,7 +351,6 @@ def compare_drivers(period):
 
     st.plotly_chart(fig, use_container_width=True)
 
-    
 # Visualizza i piloti in base al periodo selezionato
 def display_drivers_by_period():
     #period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
