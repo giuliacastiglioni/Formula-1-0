@@ -13,6 +13,7 @@ driver_standings_path = os.path.join(current_directory, 'Datasets', 'driver_stan
 results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
 circuits_path = os.path.join(current_directory, 'Datasets', 'circuits.csv')
+lap_times_path = os.path.join(current_directory, 'Datasets', 'lap_times.csv')
 
 
 # Carica i file CSV
@@ -20,6 +21,7 @@ drivers = pd.read_csv(drivers_path)
 results = pd.read_csv(results_path)
 races = pd.read_csv(races_path)
 circuits = pd.read_csv(circuits_path)
+lap_times = pd.read_csv(lap_times_path)
 
 # Merge races with circuits
 races_with_circuits = races.merge(circuits, on="circuitId", suffixes=('_race', '_circuit'))
@@ -83,6 +85,40 @@ lifespan = races_with_circuits.groupby('name_circuit')['year'].agg(['min', 'max'
 lifespan['Years Active'] = lifespan['max'] - lifespan['min']
 lifespan = lifespan.reset_index().sort_values('Years Active', ascending=False)
 lifespan.columns = ['Circuit', 'First Year', 'Last Year', 'Years Active']
+#st.dataframe(lifespan)
+# 1. Miglior tempo per giro in lap_times
+fastest_laps = lap_times.loc[lap_times.groupby('raceId')['milliseconds'].idxmin()].copy()
+
+# 2. Aggiungi circuitoId tramite races
+fastest_laps = fastest_laps.merge(races[['raceId', 'circuitId']], on='raceId', how='left')
+
+# 3. Tieni solo il miglior giro per ogni circuito
+best_lap_per_circuit = fastest_laps.loc[fastest_laps.groupby('circuitId')['milliseconds'].idxmin()].copy()
+
+# 4. Aggiungi nome circuito
+best_lap_per_circuit = best_lap_per_circuit.merge(circuits[['circuitId', 'name']], on='circuitId', how='left')
+
+# 5. Aggiungi nome pilota
+best_lap_per_circuit = best_lap_per_circuit.merge(drivers[['driverId', 'forename', 'surname']], on='driverId', how='left')
+best_lap_per_circuit['Driver'] = best_lap_per_circuit['forename'] + ' ' + best_lap_per_circuit['surname']
+
+# 6. Converti millisecondi in tempo leggibile
+def ms_to_time(ms):
+    if pd.isna(ms): return None
+    seconds = ms / 1000
+    minutes = int(seconds // 60)
+    remaining = seconds % 60
+    return f"{minutes}:{remaining:06.3f}"
+
+best_lap_per_circuit['Best Lap Time'] = best_lap_per_circuit['milliseconds'].apply(ms_to_time)
+
+# 7. Seleziona solo le colonne necessarie
+best_lap_summary = best_lap_per_circuit[['name', 'Best Lap Time', 'Driver']]
+best_lap_summary.columns = ['Circuit', 'Best Lap Time', 'Driver']
+
+# 8. Unisci con la tabella lifespan
+lifespan = lifespan.merge(best_lap_summary, on='Circuit', how='left')
+
 st.dataframe(lifespan)
 
 # Races with same name on different circuits
