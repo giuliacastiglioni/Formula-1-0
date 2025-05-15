@@ -167,28 +167,7 @@ def plot_performance(performance, period):
 
     #st.dataframe(performance)
 
-    # Ordina per posizione media (la più bassa è la migliore)
-    performance_sorted = performance.sort_values('Average Position', ascending=True)
-
-
-    # Grafico interattivo - posizione media (bar plot)
-    fig_bar = px.bar(
-        performance_sorted,
-        x='code',
-        y='Average Position',
-        title=f'Average Position per Driver in {period}',
-        color_discrete_sequence=['red']
-    )
-    fig_bar.update_yaxes(autorange='reversed', title='Average Position')
-    fig_bar.update_xaxes(title='Driver Code')
-    fig_bar.update_layout(
-        title_font_size=16,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white')
-    )
-    st.plotly_chart(fig_bar, use_container_width=True)
-
+   
     # Grafico interattivo - vittorie e podi
     fig_bar = go.Figure()
     fig_bar.add_trace(go.Bar(
@@ -216,6 +195,26 @@ def plot_performance(performance, period):
     )
     st.plotly_chart(fig_bar, use_container_width=True)
 
+ # Ordina per posizione media (la più bassa è la migliore)
+    #performance_sorted = performance.sort_values('Average Position', ascending=True)
+
+    # Grafico interattivo - posizione media (bar plot)
+    #fig_bar = px.bar(
+    #    performance_sorted,
+    #    x='code',
+    #    y='Average Position',
+    #    title=f'Average Position per Driver in {period}',
+    #    color_discrete_sequence=['red']
+    #)
+    #fig_bar.update_yaxes(autorange='reversed', title='Average Position')
+   # fig_bar.update_xaxes(title='Driver Code')
+    #fig_bar.update_layout(
+    #    title_font_size=16,
+    #    plot_bgcolor='rgba(0,0,0,0)',
+    #    paper_bgcolor='rgba(0,0,0,0)',
+    #    font=dict(color='white')
+    #)
+    #st.plotly_chart(fig_bar, use_container_width=True)
 # Funzione per ottenere il nome del pilota
 def get_driver_name(driver_id):
     driver_row = drivers_df.loc[drivers_df['driverId'] == driver_id].iloc[0]
@@ -402,7 +401,7 @@ def display_drivers_by_period():
     # Ottieni driverId selezionato
     driver_id = int(driver_selected.split('(')[-1].strip(')'))
 
-    analysis_type = st.selectbox(
+    analysis_type = st.radio(
         "Choose an analysis type",
         (
             'Evolution over time (race finish position)',
@@ -432,7 +431,7 @@ def display_drivers_by_period():
 # Esegui la funzione
 display_drivers_by_period()
 
-st.title("Qualyfing")
+st.title("Qualifying")
 
 st.write("""
 Dive into advanced race analytics: lap times, qualifying stats, and many more.
@@ -481,44 +480,45 @@ selected_driver = st.selectbox("Select a driver", sorted(drivers_list))
 
 # Filtra i dati
 driver_data = df[df['surname'] == selected_driver]
-st.markdown(f"## Qualifying Stats for {selected_driver}")
+#st.markdown(f"## Qualifying Stats for {selected_driver}")
 
-# Sezione 1: Posizione in Qualifica nel Tempo
-st.subheader("📅 Qualifying Position Over Time")
+def quali_pos_over_time(driver_data):
+    # Sezione 1: Posizione in Qualifica nel Tempo
+    st.subheader("📅 Qualifying Position Over Time")
 
-# Controllo e pulizia dei dati
-driver_data_clean = driver_data.dropna(subset=['position', 'year'])  # Elimina righe con valori mancanti
-driver_data_clean = driver_data_clean[driver_data_clean['position'].apply(lambda x: isinstance(x, (int, float)))]  # Assicurati che 'position' sia numerico
+    # Controllo e pulizia dei dati
+    driver_data_clean = driver_data.dropna(subset=['position', 'year'])  # Elimina righe con valori mancanti
+    driver_data_clean = driver_data_clean[driver_data_clean['position'].apply(lambda x: isinstance(x, (int, float)))]  # Assicurati che 'position' sia numerico
 
-# Se ci sono ancora dei problemi, possiamo aggiungere un controllo più approfondito
-if driver_data_clean.empty:
-    st.error("I dati non sono sufficienti o ci sono problemi con il formato. Verifica i dati di input.")
-else:
-    # Modifica: Coloriamo per circuito (o per anno, o per sessione)
-    fig1 = px.line(driver_data_clean.sort_values("year"), 
-                   x="year", 
-                   y="position", 
-                   color="name",  # Puoi usare "name" per il circuito o "year" per l'anno
-                   markers=True,
-                   title="Qualifying Position by Year and Circuit", 
-                   labels={"position": "Grid Position", "year": "Year", "name": "Circuit"})
+    # Se ci sono ancora dei problemi, possiamo aggiungere un controllo più approfondito
+    if driver_data_clean.empty:
+        st.error("I dati non sono sufficienti o ci sono problemi con il formato. Verifica i dati di input.")
+    else:
+        # Modifica: Coloriamo per circuito (o per anno, o per sessione)
+        fig1 = px.line(driver_data_clean.sort_values("year"), 
+                    x="year", 
+                    y="position", 
+                    color="name",  # Puoi usare "name" per il circuito o "year" per l'anno
+                    markers=True,
+                    title="Qualifying Position by Year and Circuit", 
+                    labels={"position": "Grid Position", "year": "Year", "name": "Circuit"})
 
-    # Invertiamo l'asse Y, poiché la posizione 1 è la migliore
-    fig1.update_yaxes(autorange="reversed")
+        # Invertiamo l'asse Y, poiché la posizione 1 è la migliore
+        fig1.update_yaxes(autorange="reversed")
 
-    # Aggiungiamo uno sfondo scuro e personalizzazioni per il tema
-    fig1.update_layout(
-        plot_bgcolor="black",  # Impostiamo lo sfondo nero per il grafico
-        paper_bgcolor="black",  # Impostiamo lo sfondo nero anche fuori dal grafico
-        font=dict(color="white"),  # Impostiamo il colore del testo a bianco
-        title_font_size=18,    # Impostiamo una dimensione per il titolo
-        xaxis_title="Year",    # Titolo per l'asse X
-        yaxis_title="Grid Position",  # Titolo per l'asse Y
-        xaxis=dict(tickmode='linear', tick0=2000, dtick=1),  # Per mostrare ogni anno
-        hovermode="closest"    # Mostra più dettagli quando il mouse si avvicina
-    )
+        # Aggiungiamo uno sfondo scuro e personalizzazioni per il tema
+        fig1.update_layout(
+            plot_bgcolor="black",  # Impostiamo lo sfondo nero per il grafico
+            paper_bgcolor="black",  # Impostiamo lo sfondo nero anche fuori dal grafico
+            font=dict(color="white"),  # Impostiamo il colore del testo a bianco
+            title_font_size=18,    # Impostiamo una dimensione per il titolo
+            xaxis_title="Year",    # Titolo per l'asse X
+            yaxis_title="Grid Position",  # Titolo per l'asse Y
+            xaxis=dict(tickmode='linear', tick0=2000, dtick=1),  # Per mostrare ogni anno
+            hovermode="closest"    # Mostra più dettagli quando il mouse si avvicina
+        )
 
-    st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, use_container_width=True)
 
 
 # Funzione per convertire il tempo in secondi nel formato "min:sec.msec"
@@ -530,91 +530,140 @@ def format_time(seconds):
     msecs = int((seconds - mins * 60 - secs) * 1000)
     return f"{mins:02}:{secs:02}.{msecs:03}"
 
-# Sezione 2: Miglior Tempo in Qualifica
-st.subheader("⏱️ Best Qualifying Time Over Time")
+def best_quali_time_over_time(driver_data):
+    # Sezione 2: Miglior Tempo in Qualifica
+    st.subheader("⏱️ Best Qualifying Time Over Time")
 
-# Aggiungiamo le colonne formattate per Q1, Q2, Q3
-driver_data['formatted_q1'] = driver_data['q1'].apply(format_time)
-driver_data['formatted_q2'] = driver_data['q2'].apply(format_time)
-driver_data['formatted_q3'] = driver_data['q3'].apply(format_time)
+    # Aggiungiamo le colonne formattate per Q1, Q2, Q3
+    driver_data['formatted_q1'] = driver_data['q1'].apply(format_time)
+    driver_data['formatted_q2'] = driver_data['q2'].apply(format_time)
+    driver_data['formatted_q3'] = driver_data['q3'].apply(format_time)
 
-# Creiamo un dataframe per ogni sessione di qualifica separata
-q1_data = driver_data[['year', 'formatted_q1', 'round']].dropna()
-q2_data = driver_data[['year', 'formatted_q2', 'round']].dropna()
-q3_data = driver_data[['year', 'formatted_q3', 'round']].dropna()
+    # Creiamo un dataframe per ogni sessione di qualifica separata
+    q1_data = driver_data[['year', 'formatted_q1', 'round']].dropna()
+    q2_data = driver_data[['year', 'formatted_q2', 'round']].dropna()
+    q3_data = driver_data[['year', 'formatted_q3', 'round']].dropna()
 
-# Aggiungiamo una colonna per etichettare le sessioni
-q1_data['session'] = 'Q1'
-q2_data['session'] = 'Q2'
-q3_data['session'] = 'Q3'
+    # Aggiungiamo una colonna per etichettare le sessioni
+    q1_data['session'] = 'Q1'
+    q2_data['session'] = 'Q2'
+    q3_data['session'] = 'Q3'
 
-# Uniamo i dati delle 3 sessioni in un unico dataframe
-q1_data = q1_data.rename(columns={'formatted_q1': 'time'})
-q2_data = q2_data.rename(columns={'formatted_q2': 'time'})
-q3_data = q3_data.rename(columns={'formatted_q3': 'time'})
+    # Uniamo i dati delle 3 sessioni in un unico dataframe
+    q1_data = q1_data.rename(columns={'formatted_q1': 'time'})
+    q2_data = q2_data.rename(columns={'formatted_q2': 'time'})
+    q3_data = q3_data.rename(columns={'formatted_q3': 'time'})
 
-all_qualifying_data = pd.concat([q1_data, q2_data, q3_data])
+    all_qualifying_data = pd.concat([q1_data, q2_data, q3_data])
 
-# Tracciamo il grafico, ma ora usiamo la colonna 'time' per differenziare i tempi per ogni sessione
-fig2 = px.scatter(all_qualifying_data, x="year", y="time", color="session", 
-                  title="Qualifying Times by Session (Q1, Q2, Q3)",
-                  labels={"time": "Time (min:sec.msec)", "session": "Session"})
+    # Tracciamo il grafico, ma ora usiamo la colonna 'time' per differenziare i tempi per ogni sessione
+    fig2 = px.scatter(all_qualifying_data, x="year", y="time", color="session", 
+                    title="Qualifying Times by Session (Q1, Q2, Q3)",
+                    labels={"time": "Time (min:sec.msec)", "session": "Session"})
 
-# Personalizziamo il grafico
-fig2.update_traces(marker=dict(size=10))
+    # Personalizziamo il grafico
+    fig2.update_traces(marker=dict(size=10))
 
-# Mostriamo il grafico
-st.plotly_chart(fig2, use_container_width=True)
+    # Mostriamo il grafico
+    st.plotly_chart(fig2, use_container_width=True)
 
-# Sezione 3: Qualifica vs Risultato Gara
-st.subheader("🔁 Qualifying vs Race Result")
+def quali_vs_race(driver_data):
+    st.subheader("🔁 Qualifying vs Race Result")
 
-# Creiamo un grafico a dispersione per confrontare la posizione di grid e la posizione finale
-fig3 = px.scatter(driver_data, x='grid', y='positionOrder', color='name', 
-                  title="Qualifying Position vs Race Finish Position",
-                  labels={'grid': 'Grid Position', 'positionOrder': 'Race Finish Position'})
+    # Rimuovi righe con dati mancanti
+    driver_data_clean = driver_data.dropna(subset=['grid', 'positionOrder'])
 
-# Aggiungiamo linee di riferimento sulla diagonale per visualizzare la corrispondenza
-fig3.add_shape(
-    type="line",
-    x0=driver_data['grid'].min(), y0=driver_data['grid'].min(),
-    x1=driver_data['grid'].max(), y1=driver_data['grid'].max(),
-    line=dict(color="Red", width=2, dash="dash")
-)
+    # Crea una colonna che indica se ha guadagnato o perso posizioni
+    driver_data_clean['result'] = driver_data_clean.apply(
+        lambda row: 'Gained Positions' if row['positionOrder'] < row['grid'] else 'Lost Positions',
+        axis=1
+    )
 
-# Personalizzazione grafico
-fig3.update_layout(
-    xaxis=dict(title="Grid Position", autorange="reversed"),  # Invertiamo l'asse X per mostrare la miglior posizione a sinistra
-    yaxis=dict(title="Race Finish Position", autorange="reversed"),  # Invertiamo l'asse Y per mostrare la miglior posizione in alto
-    showlegend=False
-)
+    # Mappa i colori per ciascun tipo di risultato
+    color_map = {
+        'Gained Positions': 'green',
+        'Lost Positions': 'red'
+    }
 
-st.plotly_chart(fig3, use_container_width=True)
+    # Creiamo il grafico a dispersione con legenda
+    fig3 = px.scatter(driver_data_clean, x='grid', y='positionOrder',
+                      color='result',
+                      color_discrete_map=color_map,
+                      title="Qualifying Position vs Race Finish Position",
+                      labels={'grid': 'Grid Position', 'positionOrder': 'Race Finish Position', 'result': 'Result'})
 
+    # Aggiungiamo la linea diagonale
+    min_val = min(driver_data_clean['grid'].min(), driver_data_clean['positionOrder'].min())
+    max_val = max(driver_data_clean['grid'].max(), driver_data_clean['positionOrder'].max())
+    fig3.add_shape(
+        type="line",
+        x0=min_val, y0=min_val,
+        x1=max_val, y1=max_val,
+        line=dict(color="yellow", width=2, dash="dash")
+    )
 
-# Sezione 4: Distribuzione Posizioni in Qualifica
-st.subheader("📊 Distribution of Qualifying Positions")
-fig4 = px.histogram(driver_data, x='position', nbins=20, title="Qualifying Position Histogram")
-st.plotly_chart(fig4, use_container_width=True)
+    # Invertiamo gli assi
+    fig3.update_layout(
+        xaxis=dict(title="Grid Position", autorange="reversed"),
+        yaxis=dict(title="Race Finish Position", autorange="reversed"),
+        legend_title_text='Race Outcome',
+        plot_bgcolor="black",
+        paper_bgcolor="black",
+        font=dict(color="white")
+    )
 
-# Sezione 5: Performance per Circuito
-st.subheader("🏟️ Average Qualifying Position per Circuit")
-# Raggruppa per circuito e calcola la posizione media di qualifica
-circuit_perf = driver_data.groupby('name')['position'].mean().reset_index().sort_values('position')
-
-# Usa un grafico a barre verticali con circuito sull'asse X e posizione media sull'asse Y
-fig5 = px.bar(circuit_perf, x='name', y='position',
-              title="Average Qualifying Position by Circuit",
-              labels={'position': 'Avg Qualifying Position', 'name': 'Circuit'})
-
-# Inverti l'asse Y per avere il miglior circuito in basso
-fig5.update_layout(yaxis=dict(autorange="reversed"))
-
-# Mostra il grafico
-st.plotly_chart(fig5, use_container_width=True)
-
-
-
+    st.plotly_chart(fig3, use_container_width=True)
 
 
+def distrib_of_quali_pos(driver_data):
+    # Sezione 4: Distribuzione Posizioni in Qualifica
+    st.subheader("📊 Distribution of Qualifying Positions")
+    fig4 = px.histogram(driver_data, x='position', nbins=20, title="Qualifying Position Histogram")
+    st.plotly_chart(fig4, use_container_width=True)
 
+def average_quali_pos_per_circuit(driver_data):
+    # Sezione 5: Performance per Circuito
+    st.subheader("🏟️ Average Qualifying Position per Circuit")
+    # Raggruppa per circuito e calcola la posizione media di qualifica
+    circuit_perf = driver_data.groupby('name')['position'].mean().reset_index().sort_values('position')
+
+    # Usa un grafico a barre verticali con circuito sull'asse X e posizione media sull'asse Y
+    fig5 = px.bar(circuit_perf, x='name', y='position',
+                title="Average Qualifying Position by Circuit",
+                labels={'position': 'Avg Qualifying Position', 'name': 'Circuit'})
+
+    # Inverti l'asse Y per avere il miglior circuito in basso
+    fig5.update_layout(yaxis=dict(autorange="reversed"))
+
+    # Mostra il grafico
+    st.plotly_chart(fig5, use_container_width=True)
+
+
+def visual_quali_data(driver_data):
+        analysis_type = st.radio(
+            "Choose an analysis type",
+            (
+                'Qualifying Position Over Time',
+                'Best Qualifying Time Over Time',
+                'Qualifying vs Race Result',
+                'Distribution of Qualifying Positions',
+                'Average Qualifying Position per Circuit',
+            )
+        )
+
+        st.markdown("---")
+
+        # Mostra il grafico corrispondente
+        if analysis_type == 'Qualifying Position Over Time':
+            quali_pos_over_time(driver_data)
+        elif analysis_type == 'Best Qualifying Time Over Time':
+            best_quali_time_over_time(driver_data)
+        elif analysis_type == 'Qualifying vs Race Result':
+            quali_vs_race(driver_data)
+        elif analysis_type == 'Distribution of Qualifying Positions':
+            distrib_of_quali_pos(driver_data)
+        elif analysis_type == 'Average Qualifying Position per Circuit':
+            average_quali_pos_per_circuit(driver_data)
+
+# Esegui la funzione
+visual_quali_data(driver_data)
