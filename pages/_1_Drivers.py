@@ -6,6 +6,9 @@ import os
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+from datetime import datetime
+import plotly.graph_objects as go
+
 
 # Carica e visualizza l'icona sopra il titolo
 #st.image("/workspaces/Formula-1-0/Assets/icons/helmet_1850740.png", width=100)  # Puoi regolare la larghezza come preferisci
@@ -34,6 +37,7 @@ results_path = os.path.join(current_directory, 'Datasets', 'results.csv')
 races_path = os.path.join(current_directory, 'Datasets', 'races.csv')
 qualifying_path = os.path.join(current_directory, 'Datasets', 'qualifying.csv')
 circuits_path = os.path.join(current_directory, 'Datasets', 'circuits.csv')
+constructors_path = os.path.join(current_directory, 'Datasets', 'constructors.csv')
 
 # Carica i file CSV
 drivers_df = pd.read_csv(drivers_path)
@@ -42,6 +46,7 @@ results_df = pd.read_csv(results_path)
 races_df = pd.read_csv(races_path)
 qualifying_df = pd.read_csv(qualifying_path)
 circuits_df = pd.read_csv(circuits_path)
+constructors_df = pd.read_csv(constructors_path)
 
 
 # Funzione per estrarre i piloti che soddisfano i criteri
@@ -391,6 +396,219 @@ def plot_driver_wins_by_circuit(driver_id):
     st.write(f"**Total Wins:** {total_wins}")
     st.plotly_chart(fig)
 
+
+
+def driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None):
+    races_df = races_df[['raceId', 'year']]
+    constructors_df = constructors_df[['constructorId', 'name']]
+    drivers_df['driver_name'] = drivers_df['forename'] + ' ' + drivers_df['surname']
+    drivers_df['dob'] = pd.to_datetime(drivers_df['dob'])
+
+    merged = results_df.merge(races_df, on='raceId')
+    merged = merged.merge(drivers_df[['driverId', 'driver_name', 'dob']], on='driverId')
+    merged = merged.merge(constructors_df, on='constructorId')
+
+     # Dati del pilota
+    pilota_df = merged[merged['driverId'] == driver_id]
+
+    # Carriera anno per anno
+    career = (
+        pilota_df
+        .groupby(['year', 'name'], as_index=False)
+        .agg({
+            'positionOrder': [
+                lambda x: (x == 1).sum(),     # Vittorie
+                lambda x: (x <= 3).sum(),     # Podi
+                'count'                       # Gare
+            ]
+        })
+    )
+    career.columns = ['year', 'team', 'Wins', 'Podiums', 'Races']
+    pilota_dob = pilota_df['dob'].iloc[0]  # Estrai la data di nascita
+    career['Age'] = career['year'] - pilota_dob.year
+
+
+    # Anni con più successi
+    max_wins = career['Wins'].max()
+    career['highlight'] = career['Wins'] == max_wins
+
+
+    # Prepara dati base
+    drivers_df['driver_name'] = drivers_df['forename'] + ' ' + drivers_df['surname']
+    drivers_df['dob'] = pd.to_datetime(drivers_df['dob'])
+
+    races_year_df = races_df[['raceId', 'year']]
+    constructors_df = constructors_df[['constructorId', 'name']]
+
+    merged_results = results_df.merge(races_year_df, on='raceId')
+    merged_results = merged_results.merge(drivers_df[['driverId', 'driver_name', 'dob']], on='driverId')
+    merged_results = merged_results.merge(constructors_df, on='constructorId')
+
+    merged_qual = qualifying_df.merge(races_year_df, on='raceId')
+    merged_qual = merged_qual.merge(drivers_df[['driverId', 'driver_name']], on='driverId')
+
+    pilota_df = merged_results[merged_results['driverId'] == driver_id]
+    pilota_name = pilota_df['driver_name'].iloc[0]
+
+    # Filtra per anno se specificato
+    if year:
+        pilota_df = pilota_df[pilota_df['year'] == year]
+        merged_qual = merged_qual[(merged_qual['year'] == year) & (merged_qual['driverId'] == driver_id)]
+
+    # Calcoli metriche chiave
+    wins = (pilota_df['positionOrder'] == 1).sum()
+    podiums = (pilota_df['positionOrder'] <= 3).sum()
+    races = pilota_df['raceId'].nunique()
+    points = pilota_df['points'].sum()
+
+    avg_qual = merged_qual['position'].mean()
+    if pd.isna(avg_qual):
+        avg_qual = 999  # caso no data
+
+    data = {
+        'Wins': wins,
+        'Podiums': podiums,
+        'Races': races,
+        'Avg Qual Pos': max(0, 30 - avg_qual),  # inversione: meglio qualifiche basse
+        'Total Points': points / 10  # scala down
+    }
+
+    categories = list(data.keys())
+    values = list(data.values())
+    values += values[:1]  # chiudo il cerchio
+
+    fig = go.Figure(
+        data=[
+            go.Scatterpolar(
+                r=values,
+                theta=categories + [categories[0]],
+                fill='toself',
+                line=dict(color='#FF0000', width=3),  # rosso F1 e linea spessa
+                marker=dict(color='#FFFFFF', size=8, line=dict(color='#FF0000', width=2)),
+                name=pilota_name if not year else f"{pilota_name} - {year}"
+            )
+        ]
+    )
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor='#111111',  # sfondo scuro nel plot polare
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(values)*1.2],
+                gridcolor='#444444',  # grigio scuro linee griglia
+                tickfont=dict(color='white'),
+                linecolor='white'
+            ),
+            angularaxis=dict(
+                tickfont=dict(color='white'),
+                linecolor='white',
+                gridcolor='#444444'
+            )
+        ),
+        paper_bgcolor='#000000',  # sfondo nero attorno al grafico
+        font=dict(color='white', family='Arial Black'),
+        showlegend=True,
+        legend=dict(
+            font=dict(color='white'),
+            bgcolor='#222222',
+            bordercolor='white',
+            borderwidth=1
+        ),
+        title=dict(
+            text=f"Overview performance {'year ' + str(year) if year else 'career'} of {pilota_name}",
+            font=dict(color='white', size=20)
+        ),
+        margin=dict(t=80, b=40, l=40, r=40)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Tabella carriera
+    st.markdown("### Driver's Annual Statistics")
+    st.dataframe(
+        career[['year', 'team', 'Races', 'Wins', 'Podiums', 'Age']].sort_values('year'),
+        use_container_width=True
+    )
+
+    # Compagni di squadra
+    st.markdown("### Teammates over the years")
+
+    # Ricaviamo compagni
+    compagni_dict = {}
+
+    for year in pilota_df['year'].unique():
+        team_annuali = pilota_df[pilota_df['year'] == year]['constructorId'].unique()
+        compagni = merged[
+            (merged['year'] == year) &
+            (merged['constructorId'].isin(team_annuali)) &
+            (merged['driverId'] != driver_id)
+        ]['driver_name'].unique()
+        compagni_dict[year] = sorted(set(compagni))
+
+    # Mostra in tabella
+    compagni_df = pd.DataFrame([
+        {"Anno": year, "Teammates": ", ".join(names)} for year, names in compagni_dict.items()
+    ]).sort_values('Anno')
+
+    st.dataframe(compagni_df, use_container_width=True)
+
+def age_analysis(driver_id, races_df, constructors_df):
+    st.markdown("### Heatmap Age vs Wins")
+    races_df = races_df[['raceId', 'year']]
+    constructors_df = constructors_df[['constructorId', 'name']]
+    drivers_df['driver_name'] = drivers_df['forename'] + ' ' + drivers_df['surname']
+    drivers_df['dob'] = pd.to_datetime(drivers_df['dob'])
+
+    merged = results_df.merge(races_df, on='raceId')
+    merged = merged.merge(drivers_df[['driverId', 'driver_name', 'dob']], on='driverId')
+    merged = merged.merge(constructors_df, on='constructorId')
+
+     # Dati del pilota
+    pilota_df = merged[merged['driverId'] == driver_id]
+
+    # Carriera anno per anno
+    career = (
+        pilota_df
+        .groupby(['year', 'name'], as_index=False)
+        .agg({
+            'positionOrder': [
+                lambda x: (x == 1).sum(),     # Vittorie
+                lambda x: (x <= 3).sum(),     # Podi
+                'count'                       # Gare
+            ]
+        })
+    )
+    career.columns = ['year', 'team', 'Wins', 'Podiums', 'Races']
+    pilota_dob = pilota_df['dob'].iloc[0]  # Estrai la data di nascita
+    career['Age'] = career['year'] - pilota_dob.year
+
+
+    # Anni con più successi
+    max_wins = career['Wins'].max()
+    career['highlight'] = career['Wins'] == max_wins
+    # Heatmap: righe = età, colonne = anno, valore = vittorie
+    heatmap_data = career[['year', 'Age', 'Wins']].copy()
+
+    # Crea la heatmap con Plotly
+    heatmap_fig = go.Figure(data=go.Heatmap(
+        x=heatmap_data['year'],
+        y=heatmap_data['Age'],
+        z=heatmap_data['Wins'],
+        colorscale='Reds',
+        hovertemplate='year: %{x}<br>Age: %{y}<br>Wins: %{z}<extra></extra>'
+    ))
+
+    heatmap_fig.update_layout(
+        title=f"Age vs Wins",
+        xaxis_title='Year',
+        yaxis_title='Age',
+        yaxis_autorange='reversed',
+        height=400
+    )
+
+    st.plotly_chart(heatmap_fig, use_container_width=True)
+
 # Visualizza i piloti in base al periodo selezionato
 
     #period = st.selectbox("Select the Period", ["1950-1980", "1981-2008", "2009-2013", "2014-2023", "2024"])
@@ -443,12 +661,14 @@ def display_drivers_by_period():
     analysis_type = st.radio(
         "Choose an analysis type",
         (
+            'Driver Overview',
             'Evolution over time (race finish position)',
             'Number of Wins per Year',
             'Number of Podium Finishes per Year',
             'Average qualifying position per year',
             'Total points per year',
-            'Wins by circuit distribution'
+            'Wins by circuit distribution',
+            'Age vs Wins'
             
         )
     )
@@ -456,7 +676,9 @@ def display_drivers_by_period():
     st.markdown("---")
 
     # Mostra il grafico corrispondente
-    if analysis_type == 'Evolution over time (race finish position)':
+    if analysis_type == 'Driver Overview':
+        driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None)
+    elif analysis_type == 'Evolution over time (race finish position)':
         analyze_driver_evolution(driver_id)
     elif analysis_type == 'Number of Wins per Year':
         analyze_driver_wins(driver_id)
@@ -470,6 +692,8 @@ def display_drivers_by_period():
         compare_driver_with_teammates(driver_id)
     elif analysis_type == 'Wins by circuit distribution':
         plot_driver_wins_by_circuit(driver_id)
+    elif analysis_type == 'Age vs Wins':
+        age_analysis(driver_id, races_df, constructors_df)
 # Esegui la funzione
 display_drivers_by_period()
 
