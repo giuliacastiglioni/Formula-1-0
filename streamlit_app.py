@@ -71,11 +71,11 @@ st.markdown("""
         @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
         
         .title {
-            font-family: 'Poppins', serif;
-            font-style: italic;
+            font-family: 'Georgia', sans-serif;
+            font-size: 14px;
+            color: white;
+            margin-top: 10px;
             text-align: center;
-            font-size: 3rem;
-            color: #FF5733;  /* Un bel colore arancione per il titolo */
         }
 
 
