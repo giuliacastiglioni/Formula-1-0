@@ -523,7 +523,8 @@ def driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df
         margin=dict(t=80, b=40, l=40, r=40)
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown("Each 'r' value on the radar chart corresponds to a scaled metric (e.g., wins, podiums, races) that helps visualize the driver's performance across different aspects.")
+
+    st.markdown("Each 'r' value on the radar chart corresponds to a scaled metric (e.g., wins, podiums, races) that helps visualize the driver's performance across different aspects. For average position of course the lower, the better.")
 
     # Tabella carriera
     st.markdown("### Driver's Annual Statistics")
