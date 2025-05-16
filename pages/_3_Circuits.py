@@ -3,9 +3,68 @@ import pandas as pd
 import pydeck as pdk
 import plotly.express as px
 import os
+from streamlit_extras.stylable_container import stylable_container
 
 from header import show_f1_header
 show_f1_header()
+
+
+# Pulsanti F1 in alto
+with stylable_container(
+    key="f1-menu",
+    css_styles="""
+    div[data-testid="stHorizontalBlock"] > div {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        background-color: #1a1a1a;  /* sfondo scuro per contrasto */
+        border-bottom: 3px solid #e10600; /* linea rossa sotto */
+    }
+
+    button {
+        background-color: #e10600; /* F1 red */
+        color: white;
+        font-weight: 700;
+        font-size: 17px;
+        padding: 0.7rem 1.6rem;
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0 6px 12px rgba(225, 6, 0, 0.6);
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.15s ease;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    button:hover {
+        background-color: #ff3b3b;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 59, 59, 0.8);
+    }
+
+    button:focus {
+        outline: none;
+        box-shadow: 0 0 8px 3px #ff3b3b;
+    }
+    """
+):
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button("Home"):
+            st.switch_page("streamlit_app.py")
+    with col2:
+        if st.button("Drivers "):
+            st.switch_page("pages/_1_Drivers.py")
+    with col3:
+        if st.button("Teams"):
+            st.switch_page("pages/_3_Teams.py")
+    with col4:
+        if st.button("Trivia & Games"):
+            st.switch_page("pages/_4_Trivia_&_Games.py")
+
+
 
 # Ottieni il percorso assoluto della cartella corrente
 current_directory = os.getcwd()
