@@ -4,6 +4,8 @@ import time
 
 # Carica e visualizza l'icona sopra il titolo
 #st.image("/workspaces/Formula-1-0/Assets/icons/Trivia.png", width=100)  # Puoi regolare la larghezza come preferisci
+from header import show_f1_header
+show_f1_header()
 
 st.title("F1 Trivia & Games!")
 

@@ -9,7 +9,8 @@ import numpy as np
 from datetime import datetime
 import plotly.graph_objects as go
 
-
+from header import show_f1_header
+show_f1_header()
 # Carica e visualizza l'icona sopra il titolo
 #st.image("/workspaces/Formula-1-0/Assets/icons/helmet_1850740.png", width=100)  # Puoi regolare la larghezza come preferisci
 # Titolo

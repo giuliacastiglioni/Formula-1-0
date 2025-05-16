@@ -4,6 +4,9 @@ import pydeck as pdk
 import plotly.express as px
 import os
 
+from header import show_f1_header
+show_f1_header()
+
 # Ottieni il percorso assoluto della cartella corrente
 current_directory = os.getcwd()
 

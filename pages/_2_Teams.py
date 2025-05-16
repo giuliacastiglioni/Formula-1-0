@@ -5,8 +5,12 @@ import os
 import random
 from matplotlib.colors import to_rgb, to_hex
 
-
 st.set_page_config(page_title="Teams", page_icon="🏎️")
+
+from header import show_f1_header
+show_f1_header()
+
+
 st.title("Constructor Performance Analysis")
 st.markdown("Explore key metrics and performance trends of F1 constructors from 1950 to today.")
 

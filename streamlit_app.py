@@ -1,7 +1,11 @@
 import streamlit as st
 
+
 # Impostazioni di base per Streamlit
 st.set_page_config(page_title="Formula 1 Live Hub", layout="wide", page_icon="🏎️")
+
+from header import show_f1_header
+show_f1_header()
 
 # Importa il font da Google Fonts
 st.markdown("""
@@ -21,7 +25,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Intestazione dell'app con il nuovo font
-st.markdown("<h1 class='title'>🏁 Welcome to the Formula 1 Live Hub 🏁</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'> Welcome to the Formula 1 Live Hub </h1>", unsafe_allow_html=True)
 
 
 
