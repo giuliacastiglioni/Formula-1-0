@@ -61,7 +61,7 @@ with stylable_container(
         if st.button("Teams"):
             st.switch_page("pages/_3_Teams.py")
     with col4:
-        if st.button("Trivia & Games"):
+        if st.button("Trivial & Games"):
             st.switch_page("pages/_4_Trivia_&_Games.py")
 
 

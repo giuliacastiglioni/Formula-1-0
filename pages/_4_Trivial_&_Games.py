@@ -66,7 +66,7 @@ with stylable_container(
 
 
 
-st.title("F1 Trivia & Games!")
+st.title("F1 Trivial & Games!")
 
 st.write("""
 Learn about legendary records, funny moments, and rare stats in Formula 1 history.  
@@ -255,7 +255,7 @@ if "answered" not in st.session_state:
     st.session_state.answered = False
 
 # Trivia section
-st.subheader("🏁 F1 Trivia Time!")
+st.subheader("🏁 F1 Trivial Time!")
 st.write(f"Current score: {st.session_state.score}")
 
 # Controlla se ci sono ancora domande
@@ -285,7 +285,7 @@ else:
     st.write(f"Punteggio finale: {st.session_state.score} su {len(questions)}")
 
 # Pulsante per ricominciare
-if st.button("Restart Trivia"):
+if st.button("Restart Trivial"):
     st.session_state.score = 0
     st.session_state.remaining_questions = random.sample(questions, len(questions))
     st.session_state.current_question = st.session_state.remaining_questions.pop(0)
