@@ -727,10 +727,10 @@ def display_drivers_by_period():
             'Driver Overview',
             'Wins by circuit distribution',
             'Age vs Wins',
-            'Evolution over time (race finish position)',
             'Number of Wins per Year',
             'Number of Podium Finishes per Year',
             'Average qualifying position per year',
+            'Average race finish position per year',
             'Total points per year'
             
         )
@@ -741,7 +741,7 @@ def display_drivers_by_period():
     # Mostra il grafico corrispondente
     if analysis_type == 'Driver Overview':
         driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None)
-    elif analysis_type == 'Evolution over time (race finish position)':
+    elif analysis_type == 'Average race finish position per year':
         analyze_driver_evolution(driver_id)
     elif analysis_type == 'Number of Wins per Year':
         analyze_driver_wins(driver_id)
