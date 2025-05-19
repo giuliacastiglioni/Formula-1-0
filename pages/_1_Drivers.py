@@ -725,9 +725,9 @@ def display_drivers_by_period():
         "Choose an analysis type",
         (
             'Driver Overview',
-            'Evolution over time (race finish position)',
             'Wins by circuit distribution',
             'Age vs Wins',
+            'Evolution over time (race finish position)',
             'Number of Wins per Year',
             'Number of Podium Finishes per Year',
             'Average qualifying position per year',
