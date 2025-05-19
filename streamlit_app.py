@@ -60,7 +60,7 @@ with stylable_container(
             st.switch_page("pages/_3_Circuits.py")
     with col4:
         if st.button("Trivial & Games"):
-            st.switch_page("pages/_4_Trivia_&_Games.py")
+            st.switch_page("pages/_4_Trivial_&_Games.py")
 
 
 
