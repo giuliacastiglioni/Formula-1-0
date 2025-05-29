@@ -9,7 +9,10 @@ import numpy as np
 from datetime import datetime
 import plotly.graph_objects as go
 from streamlit_extras.stylable_container import stylable_container
-
+import wikipediaapi
+import requests
+from PIL import Image
+from io import BytesIO
 
 from header import show_f1_header
 show_f1_header()
@@ -702,24 +705,67 @@ def age_analysis(driver_id, races_df, constructors_df):
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'World Titles']])
     #elif period in ["1981-2008", "2009-2013","2014-2023"]:
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
+from PIL import Image, UnidentifiedImageError
+from io import BytesIO
+import requests
+
+def get_wikipedia_image_url(page_url):
+    try:
+        title = page_url.split('/wiki/')[-1]
+        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
+        headers = {'User-Agent': 'Formula1App/1.0 (contact@example.com)'}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        if 'thumbnail' in data and 'source' in data['thumbnail']:
+            return data['thumbnail']['source']
+    except Exception as e:
+        # Logga o ignora l'errore
+        print(f"Sorry! No Photo available : {e}")
+    return None
+
+def load_image_from_url(url):
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        img = Image.open(BytesIO(response.content))
+        img.verify()  # verifica che l'immagine sia valida
+        img = Image.open(BytesIO(response.content))  # riapre immagine per usarla
+        return img
+    except (requests.RequestException, UnidentifiedImageError) as e:
+        print(f"Immagine non caricabile da URL {url}: {e}")
+        return None
+
 def display_drivers_by_period():
-    # Visualizza le statistiche in una sezione separata
     st.title("Drivers statistics")
-    # Scegli il periodo per analizzare le performance
     period = st.selectbox("Select the Period", ["1984-2008","2009-2013","2014-2023", "2024"])
     performance = analyze_performance_by_period(period)
     analyze_performance_by_period(period)
     plot_performance(performance, period)
     compare_drivers(period)
 
-
     st.title(f"Single driver analysis")
-    # Lista driver disponibili
     drivers_list = drivers_df[['driverId', 'surname']].drop_duplicates()
     drivers_list['label'] = drivers_list['surname'] + ' (' + drivers_list['driverId'].astype(str) + ')'
     driver_selected = st.selectbox("Select a Driver", drivers_list['label'].values)
-    # Ottieni driverId selezionato
     driver_id = int(driver_selected.split('(')[-1].strip(')'))
+
+    # Recupera l'url Wikipedia del driver
+    url = drivers_df.loc[drivers_df['driverId'] == driver_id, 'url'].values
+
+    img_url = None  # definisco sempre la variabile
+
+    if len(url) > 0 and url[0]:
+        img_url = get_wikipedia_image_url(url[0])
+
+    if img_url:
+        img = load_image_from_url(img_url)
+        if img:
+            st.image(img, width=300)
+        else:
+            st.write("Sorry! No image available for this Driver!")
+    else:
+        st.write("Sorry! No image available for this Driver!")
 
     analysis_type = st.radio(
         "Choose an analysis type",
@@ -732,13 +778,12 @@ def display_drivers_by_period():
             'Average qualifying position per year',
             'Average race finish position per year',
             'Total points per year'
-            
         )
     )
 
     st.markdown("---")
 
-    # Mostra il grafico corrispondente
+    # Visualizzazione grafici ecc. come prima...
     if analysis_type == 'Driver Overview':
         driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None)
     elif analysis_type == 'Average race finish position per year':
@@ -757,6 +802,7 @@ def display_drivers_by_period():
         plot_driver_wins_by_circuit(driver_id)
     elif analysis_type == 'Age vs Wins':
         age_analysis(driver_id, races_df, constructors_df)
+
 # Esegui la funzione
 display_drivers_by_period()
 
