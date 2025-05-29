@@ -302,51 +302,49 @@ if selected_team in team_colors:
 else:
     main_team_color = random.choice(list(team_colors.values()))
 
+import plotly.express as px
+
 # Filtra i piloti del team selezionato
 team_drivers = driver_years[driver_years['name'] == selected_team]
 
-# Prepara etichette, genitori e hovertext
-labels = [selected_team] + [f"{row['forename']} {row['surname']}" for _, row in team_drivers.iterrows()]
-parents = [""] + [selected_team] * len(team_drivers)
-hover_texts = ["Team"] + [f"Years in team (period {selected_period}): {row['years_str']}" for _, row in team_drivers.iterrows()]
+# Lista anni del periodo selezionato
+year_range = list(range(start_year, end_year + 1))
 
-# Genera gradiente colori per piloti (schiarisce il colore base)
-num_drivers = len(team_drivers)
-factors = [1 + 0.15 * i for i in range(num_drivers)]  # es: 1.0,1.15,1.3,1.45 ecc.
-driver_colors = [adjust_color_lightness(main_team_color, f) for f in factors]
+# Costruisci matrice presenza (1 se ha corso per il team quell'anno, altrimenti 0)
+heatmap_data = []
+pilot_names = []
 
-# Crea mappa colori associando il colore principale al team e i colori gradiente ai piloti
-color_map = {selected_team: main_team_color}
-for driver_label, color in zip(labels[1:], driver_colors):
-    color_map[driver_label] = color
+for _, row in team_drivers.iterrows():
+    years = row['year']
+    name = f"{row['forename']} {row['surname']}"
+    pilot_names.append(name)
+    row_presence = [1 if y in years else 0 for y in year_range]
+    heatmap_data.append(row_presence)
 
-# DataFrame per sunburst
-df_sunburst = pd.DataFrame({
-    "labels": labels,
-    "parents": parents,
-    "hover_text": hover_texts
-})
+# DataFrame per heatmap
+df_heatmap = pd.DataFrame(heatmap_data, index=pilot_names, columns=year_range)
 
-# Creazione sunburst con colori personalizzati
-fig = px.sunburst(
-    df_sunburst,
-    names='labels',
-    parents='parents',
-    hover_name='hover_text',
-    color='labels',
-    color_discrete_map=color_map,
+# Crea heatmap con Plotly
+fig = px.imshow(
+    df_heatmap,
+    labels=dict(x="Year", y="Driver", color="Active"),
+    color_continuous_scale=["#111111", main_team_color],  # nero = assente, colore team = presente
+    aspect="auto"
 )
-
-fig.update_traces(hovertemplate='%{label}<br>%{hovertext}<extra></extra>')
 
 fig.update_layout(
-    margin=dict(t=40, l=0, r=0, b=0),
+    title=f"{selected_team} drivers in selected period ({start_year}-{end_year})",
+    xaxis_title="Year",
+    yaxis_title="Driver",
     paper_bgcolor='black',
-    font=dict(color='white', size=16),
+    plot_bgcolor='black',
+    font=dict(color='white'),
+    height=500,
+    margin=dict(t=60, l=100, r=20, b=40)
 )
 
+# Mostra grafico
 st.plotly_chart(fig, use_container_width=True)
-
 
 # Section 6: Extra Stats
 st.subheader("Constructors' Championship Titles")
