@@ -711,7 +711,7 @@ def get_wikipedia_image_url(page_url):
     try:
         title = page_url.split('/wiki/')[-1]
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
-        headers = {'User-Agent': 'Formula1App/1.0 (contact@example.com)'}
+        headers = {'User-Agent': 'Formula1App/1.0 (giuliamaria2000@gmail.com)'}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
