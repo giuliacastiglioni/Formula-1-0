@@ -181,8 +181,40 @@ circuit_map = pdk.Deck(
     ],
     tooltip={"text": "{name}\n{location}, {country}"}
 )
-
+# Add legend
+st.markdown(
+    """
+    <style>
+    .legend {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .legend-color {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .red { background-color: red; }
+    .green { background-color: green; }
+    </style>
+    <div class="legend">
+        <div class="legend-item"><span class="legend-color red"></span> Circuits no longer used</div>
+        <div class="legend-item"><span class="legend-color green"></span> Current circuits</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 st.pydeck_chart(circuit_map)
+
+
 
 # --- poi puoi mostrare la tabella lifespan ---
 st.dataframe(lifespan)
