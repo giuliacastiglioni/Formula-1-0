@@ -708,60 +708,52 @@ def age_analysis(driver_id, races_df, constructors_df):
 
 
 
-
-@st.cache_data(show_spinner=False)
-def get_wikipedia_image_url_cached(page_url):
+def get_wikipedia_image_url(page_url):
     try:
         title = page_url.split('/wiki/')[-1].replace(' ', '_')
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
-        headers = {
-            'User-Agent': 'Formula1App/1.0 (https://formula-1-0.streamlit.app/; giuliamaria2000@gmail.com)'
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+        headers = {'User-Agent': 'Formula1App/1.0 (https://formula-1-0.streamlit.app/; giuliamaria2000@gmail.com)'}
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
         if 'thumbnail' in data and 'source' in data['thumbnail']:
             return data['thumbnail']['source']
-        else:
-            st.write(f"❗️ Nessuna miniatura trovata per: {title}")
     except Exception as e:
-        st.write(f"❗️ Errore nel recuperare immagine Wikipedia per {page_url}: {e}")
+        print(f"[Wikipedia REST] Immagine non trovata: {e}")
     return None
 
-@st.cache_data(show_spinner=False)
-def load_image_from_url_cached(url):
+
+
+def load_image_from_url(url):
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
         return img
     except Exception as e:
-        st.write(f"❗️ Errore caricamento immagine da URL: {e}")
+        print(f"[Caricamento immagine] Errore: {e}")
         return None
 
 def display_drivers_by_period():
     st.title("Drivers statistics")
     period = st.selectbox("Select the Period", ["1984-2008","2009-2013","2014-2023", "2024"])
-    
-    # Qui chiami la tua funzione di analisi dati
     performance = analyze_performance_by_period(period)
+    analyze_performance_by_period(period)
     plot_performance(performance, period)
     compare_drivers(period)
 
-    st.title("Single driver analysis")
+    st.title(f"Single driver analysis")
     drivers_list = drivers_df[['driverId', 'surname']].drop_duplicates()
     drivers_list['label'] = drivers_list['surname'] + ' (' + drivers_list['driverId'].astype(str) + ')'
     driver_selected = st.selectbox("Select a Driver", drivers_list['label'].values)
     driver_id = int(driver_selected.split('(')[-1].strip(')'))
 
-    # Recupera e mostra URL Wikipedia del driver
+    # Recupera l'URL Wikipedia del driver
     url = drivers_df.loc[drivers_df['driverId'] == driver_id, 'url'].values
     if len(url) > 0 and url[0]:
-        st.write(f"Driver Wikipedia URL: {url[0]}")  # DEBUG URL
-        img_url = get_wikipedia_image_url_cached(url[0])
+        img_url = get_wikipedia_image_url(url[0])
         if img_url:
-            st.write(f"Image URL: {img_url}")  # DEBUG immagine trovata
-            img = load_image_from_url_cached(img_url)
+            img = load_image_from_url(img_url)
             if img:
                 st.image(img, width=300)
             else:
@@ -784,9 +776,10 @@ def display_drivers_by_period():
             'Total points per year'
         )
     )
+
     st.markdown("---")
 
-    # Richiama le funzioni di analisi a seconda della scelta
+    # Visualizzazione grafici ecc. come prima...
     if analysis_type == 'Driver Overview':
         driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None)
     elif analysis_type == 'Average race finish position per year':
@@ -806,7 +799,7 @@ def display_drivers_by_period():
     elif analysis_type == 'Age vs Wins':
         age_analysis(driver_id, races_df, constructors_df)
 
-# Esegui la funzione principale
+# Esegui la funzione
 display_drivers_by_period()
 
 st.title("Qualifying")
