@@ -302,7 +302,6 @@ if selected_team in team_colors:
 else:
     main_team_color = random.choice(list(team_colors.values()))
 
-import plotly.express as px
 
 # Filtra i piloti del team selezionato
 team_drivers = driver_years[driver_years['name'] == selected_team]
@@ -324,14 +323,18 @@ for _, row in team_drivers.iterrows():
 # DataFrame per heatmap
 df_heatmap = pd.DataFrame(heatmap_data, index=pilot_names, columns=year_range)
 
-# Crea heatmap con Plotly
+# Crea heatmap con Plotly (senza legenda color)
 fig = px.imshow(
     df_heatmap,
-    labels=dict(x="Year", y="Driver", color="Active"),
+    labels=dict(x="Year", y="Driver"),
     color_continuous_scale=["#111111", main_team_color],  # nero = assente, colore team = presente
     aspect="auto"
 )
 
+# Rimuovi barra colore
+fig.update_coloraxes(showscale=False)
+
+# Layout grafico
 fig.update_layout(
     title=f"{selected_team} drivers in selected period ({start_year}-{end_year})",
     xaxis_title="Year",
