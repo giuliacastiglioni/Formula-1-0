@@ -12,7 +12,7 @@ from streamlit_extras.stylable_container import stylable_container
 import requests
 from io import BytesIO
 from PIL import Image, UnidentifiedImageError
-from wikipedia
+import wikipedia
 
 from header import show_f1_header
 show_f1_header()
