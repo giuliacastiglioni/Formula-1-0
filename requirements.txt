@@ -5,3 +5,4 @@ pandas
 plotly
 networkx
 streamlit_extras
+wikipedia
