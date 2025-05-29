@@ -708,12 +708,15 @@ def age_analysis(driver_id, races_df, constructors_df):
 
 
 
+from urllib.parse import quote  # All'inizio del file
+
 def get_wikipedia_image_url(page_url):
     try:
         title = page_url.split('/wiki/')[-1].replace(' ', '_')
+        title = quote(title)  # Codifica sicura
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
-        headers = {'User-Agent': 'Formula1streamlitapp/1.0 (contact@example.com)'}
-        response = requests.get(url, headers=headers)
+        headers = {'User-Agent': 'Formula1App/1.0 (giulia.f1app@google.com)'}
+        response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         data = response.json()
         if 'thumbnail' in data and 'source' in data['thumbnail']:
@@ -721,6 +724,7 @@ def get_wikipedia_image_url(page_url):
     except Exception as e:
         print(f"[Wikipedia REST] Immagine non trovata: {e}")
     return None
+
 
 def load_image_from_url(url):
     try:
