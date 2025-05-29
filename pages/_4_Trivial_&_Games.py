@@ -184,10 +184,10 @@ questions = [
         "fun_fact": "Fun Fact: Daniel Ricciardo became famous for celebrating his podium finishes by drinking champagne from his racing shoe—#Shoey!"
     },
     {
-        "question": "What is the most number of laps ever completed in a single F1 race?",
+        "question": "What is the most number of km ever completed in a single F1 race?",
         "options": ["300", "350", "400", "500"],
         "answer": "500",
-        "fun_fact": "Fun Fact: The most laps completed in an F1 race is 500, which happened during the 1954 French Grand Prix!"
+        "fun_fact": "Fun Fact: The most km completed in an F1 race is 500, which happened during the 1954 French Grand Prix!"
     },
     {
         "question": "Who holds the record for the most Grand Prix wins without a World Championship title?",
@@ -298,14 +298,14 @@ Have fun with interactive games!
 """)
 
 # SELEZIONE GIOCO
-game_choice = st.radio("Choose your Game:", ["F1 Pitstop Challenge", "Reaction Time Challenge", "Box Strategy","Formula 1 Manager Simulation"])
+game_choice = st.radio("Choose your Game:", [ "Reaction Time Challenge", "Box Strategy", "Formula 1 Manager Simulation"])
 
 # ========== GIOCO 1: PITSTOP CHALLENGE ==========
 
 def pitstop_challenge():
-    st.subheader("🔧 F1 Pitstop Challenge")
+    st.subheader("F1 Pitstop Challenge")
     st.write("**Will you complete the perfect Pitstop?**")
-    st.write("🔧 Cambio gomme → ⛽ Rifornimento → 🧠 Strategia box")
+    st.write("Cambio gomme → Rifornimento → Strategia box")
 
     if "step" not in st.session_state:
         st.session_state.step = 0
@@ -319,18 +319,18 @@ def pitstop_challenge():
         st.session_state.times = []
 
     if st.session_state.best_time:
-        st.success(f"🏆 Best Time: **{st.session_state.best_time:.2f} seconds**")
+        st.success(f"Best Time: **{st.session_state.best_time:.2f} seconds**")
 
     if st.session_state.step == 0:
-        if st.button("🔁 Start your Pitstop!"):
+        if st.button("Start your Pitstop!"):
             st.session_state.step = 1
             st.session_state.start_time = time.time()
             st.rerun()
 
     elif st.session_state.step == 1:
-        st.write("🔧 **Cambio gomme in corso...**")
+        st.write(" **Cambio gomme in corso...**")
         time.sleep(random.uniform(0.5, 1.5))
-        if st.button("✅ Cambio completato!"):
+        if st.button("Cambio completato!"):
             elapsed = time.time() - st.session_state.start_time
             st.session_state.times.append(elapsed)
             st.session_state.start_time = time.time()
@@ -338,9 +338,9 @@ def pitstop_challenge():
             st.rerun()
 
     elif st.session_state.step == 2:
-        st.write("⛽ **Rifornimento in corso...**")
+        st.write("**Rifornimento in corso...**")
         time.sleep(random.uniform(0.5, 1.5))
-        if st.button("✅ Rifornimento completato!"):
+        if st.button("Rifornimento completato!"):
             elapsed = time.time() - st.session_state.start_time
             st.session_state.times.append(elapsed)
             st.session_state.start_time = time.time()
@@ -348,9 +348,9 @@ def pitstop_challenge():
             st.rerun()
 
     elif st.session_state.step == 3:
-        st.write("🧠 **Box Strategy Analysis...**")
+        st.write("**Box Strategy Analysis...**")
         time.sleep(random.uniform(0.5, 1.5))
-        if st.button("✅ Confirmed Strategy!"):
+        if st.button("Confirmed Strategy!"):
             elapsed = time.time() - st.session_state.start_time
             st.session_state.times.append(elapsed)
             total_time = sum(st.session_state.times)
@@ -375,7 +375,7 @@ def pitstop_challenge():
 # ========== GIOCO 2: REACTION TIME CHALLENGE ==========
 
 def reaction_time_challenge():
-    st.subheader("⏱️ Reaction Time Challenge")
+    st.subheader("Reaction Time Challenge")
     st.write("Click when you see the GREEN light!")
 
     if "game_started" not in st.session_state:
@@ -436,9 +436,11 @@ def reaction_time_challenge():
                 st.session_state.game_started = False
                 st.rerun()
 
-# Funzione Box Strategy aggiornata senza countdown
+import streamlit as st
+import random
+
 def box_strategy():
-    st.subheader("🧠 Box Strategy")
+    st.subheader("Box Strategy")
     st.write("Test your race engineering instincts! Choose the best pit strategy in dynamic race scenarios. Can you make the smartest calls under pressure?")
 
     # Modalità Hard
@@ -511,12 +513,17 @@ def box_strategy():
         st.session_state.box_score = 0
         st.session_state.box_feedback = ""
         st.session_state.box_done = False
-        st.session_state.quiz_started = False  # Indica se il quiz è stato avviato, solo se non esiste
+        st.session_state.quiz_started = False
 
     # Se il quiz è stato avviato
     if not st.session_state.box_done:
         if not st.session_state.quiz_started:
-            st.session_state.quiz_started = True  # Segna che il quiz è iniziato
+            st.session_state.quiz_started = True
+
+        # Protezione contro l'accesso fuori indice
+        if st.session_state.current_box_question >= len(st.session_state.box_scenarios):
+            st.session_state.box_done = True
+            st.rerun()
 
         # Mostra la domanda e le opzioni
         q = st.session_state.box_scenarios[st.session_state.current_box_question]
@@ -525,43 +532,36 @@ def box_strategy():
         choice = st.radio("What would you do?", q["options"], key=f"box_q{st.session_state.current_box_question}")
 
         # Mostra la conferma della scelta
-        if st.button("✅ Confirm Strategy"):
+        if st.button("Confirm Strategy"):
             if q["options"].index(choice) == q["correct"]:
-                st.success("🎯 Perfect strategy call!")
+                st.success("Perfect strategy call!")
                 st.session_state.box_score += 1
-                st.session_state.box_feedback = "✅ That was the ideal move for maximizing race pace and minimizing time loss."
+                st.session_state.box_feedback = "That was the ideal move for maximizing race pace and minimizing time loss."
             else:
-                st.error("❌ That strategy wasn't optimal.")
+                st.error("That strategy wasn't optimal.")
                 correct_option = q["options"][q["correct"]]
-                st.session_state.box_feedback = f"📌 The best strategy would have been: **{correct_option}**."
-            
-            st.session_state.current_box_question += 1
+                st.session_state.box_feedback = f"The best strategy would have been: **{correct_option}**."
 
-            # Se il quiz è finito
-            if st.session_state.current_box_question == len(scenarios):
-                st.session_state.box_done = True
+            st.session_state.current_box_question += 1
             st.rerun()
 
     else:
         # Feedback finale quando il quiz è completato
-        st.success(f"🏁 You've completed all the scenarios! Your score: **{st.session_state.box_score}/{len(scenarios)}**")
+        st.success(f" You've completed all the scenarios! Your score: **{st.session_state.box_score}/{len(scenarios)}**")
 
         if st.session_state.box_score == len(scenarios):
             st.balloons()
-            st.markdown("### 🏆 Excellent strategist! The pit wall needs you.")
+            st.markdown("### Excellent strategist! The pit wall needs you.")
         elif st.session_state.box_score >= len(scenarios) // 2:
-            st.markdown("### 👍 Solid strategy skills! Keep refining your race instincts.")
+            st.markdown("### Solid strategy skills! Keep refining your race instincts.")
         else:
-            st.markdown("### 🤔 Strategy needs work. Try again and trust the data!")
+            st.markdown("### Strategy needs work. Try again and trust the data!")
 
         # Aggiungi un pulsante per ripartire da zero
         if st.button("🔁 Play Again"):
-            # Reset delle variabili di sessione
             for key in list(st.session_state.keys()):
-                if key.startswith("box_"):
+                if key.startswith("box_") or key.startswith("quiz_"):
                     del st.session_state[key]
-            st.session_state.box_done = False
-            st.session_state.current_box_question = 0
             st.rerun()
 
 # Dati dei piloti (Esempio)
@@ -640,9 +640,9 @@ def simulazione_gara():
 
 
 # LANCIA IL GIOCO SELEZIONATO
-if game_choice == "F1 Pitstop Challenge":
-    pitstop_challenge()
-elif game_choice == "Reaction Time Challenge":
+#if game_choice == "F1 Pitstop Challenge":
+#   pitstop_challenge()
+if game_choice == "Reaction Time Challenge":
     reaction_time_challenge()
 elif game_choice == "Box Strategy":
     box_strategy()
