@@ -9,10 +9,9 @@ import numpy as np
 from datetime import datetime
 import plotly.graph_objects as go
 from streamlit_extras.stylable_container import stylable_container
-import wikipediaapi
 import requests
-from PIL import Image
 from io import BytesIO
+from PIL import Image, UnidentifiedImageError
 
 from header import show_f1_header
 show_f1_header()
@@ -705,9 +704,7 @@ def age_analysis(driver_id, races_df, constructors_df):
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'World Titles']])
     #elif period in ["1981-2008", "2009-2013","2014-2023"]:
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
-from PIL import Image, UnidentifiedImageError
-from io import BytesIO
-import requests
+
 
 def get_wikipedia_image_url(page_url):
     try:
