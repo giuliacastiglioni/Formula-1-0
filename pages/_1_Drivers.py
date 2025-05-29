@@ -12,7 +12,7 @@ from streamlit_extras.stylable_container import stylable_container
 import requests
 from io import BytesIO
 from PIL import Image, UnidentifiedImageError
-import wikipediaapi
+
 
 from header import show_f1_header
 show_f1_header()
@@ -760,7 +760,7 @@ def display_drivers_by_period():
             st.warning("Sorry! No Image available for this Driver!")
     else:
         st.warning("Sorry! No Image available for this Driver!")
-        
+
     analysis_type = st.radio(
         "Choose an analysis type",
         (
