@@ -707,31 +707,29 @@ def age_analysis(driver_id, races_df, constructors_df):
     #    st.dataframe(selected_drivers[['forename', 'surname', 'nationality', 'Race Wins']])
 
 
+
 def get_wikipedia_image_url(page_url):
     try:
-        title = page_url.split('/wiki/')[-1]
+        title = page_url.split('/wiki/')[-1].replace(' ', '_')
         url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
-        headers = {'User-Agent': 'Formula1App/1.0 (giuliamaria2000@gmail.com)'}
+        headers = {'User-Agent': 'Formula1App/1.0 (contact@example.com)'}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
         if 'thumbnail' in data and 'source' in data['thumbnail']:
             return data['thumbnail']['source']
     except Exception as e:
-        # Logga o ignora l'errore
-        print(f"Sorry! No Photo available : {e}")
+        print(f"[Wikipedia REST] Immagine non trovata: {e}")
     return None
 
 def load_image_from_url(url):
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
-        img.verify()  # verifica che l'immagine sia valida
-        img = Image.open(BytesIO(response.content))  # riapre immagine per usarla
         return img
-    except (requests.RequestException, UnidentifiedImageError) as e:
-        print(f"Immagine non caricabile da URL {url}: {e}")
+    except Exception as e:
+        print(f"[Caricamento immagine] Errore: {e}")
         return None
 
 def display_drivers_by_period():
@@ -748,23 +746,21 @@ def display_drivers_by_period():
     driver_selected = st.selectbox("Select a Driver", drivers_list['label'].values)
     driver_id = int(driver_selected.split('(')[-1].strip(')'))
 
-    # Recupera l'url Wikipedia del driver
+    # Recupera l'URL Wikipedia del driver
     url = drivers_df.loc[drivers_df['driverId'] == driver_id, 'url'].values
-
-    img_url = None  # definisco sempre la variabile
-
     if len(url) > 0 and url[0]:
         img_url = get_wikipedia_image_url(url[0])
-
-    if img_url:
-        img = load_image_from_url(img_url)
-        if img:
-            st.image(img, width=300)
+        if img_url:
+            img = load_image_from_url(img_url)
+            if img:
+                st.image(img, width=300)
+            else:
+                st.warning("Sorry! No Image available for this Driver!")
         else:
-            st.write("Sorry! No image available for this Driver!")
+            st.warning("Sorry! No Image available for this Driver!")
     else:
-        st.write("Sorry! No image available for this Driver!")
-
+        st.warning("Sorry! No Image available for this Driver!")
+        
     analysis_type = st.radio(
         "Choose an analysis type",
         (
