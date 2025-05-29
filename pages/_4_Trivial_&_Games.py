@@ -436,9 +436,6 @@ def reaction_time_challenge():
                 st.session_state.game_started = False
                 st.rerun()
 
-import streamlit as st
-import random
-
 def box_strategy():
     st.subheader("Box Strategy")
     st.write("Test your race engineering instincts! Choose the best pit strategy in dynamic race scenarios. Can you make the smartest calls under pressure?")
