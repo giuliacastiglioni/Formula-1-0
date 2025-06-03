@@ -670,7 +670,6 @@ def age_analysis(driver_id, races_df, constructors_df):
         title=f"Age vs Wins",
         xaxis_title='Year',
         yaxis_title='Age',
-        yaxis_autorange='reversed',
         height=400
     )
 
