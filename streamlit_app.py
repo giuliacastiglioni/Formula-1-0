@@ -3,7 +3,7 @@ from streamlit_extras.stylable_container import stylable_container
 from header import show_f1_header
 
 # Impostazioni di base per Streamlit
-st.set_page_config(page_title="Formula 1 Live Hub", layout="wide", page_icon="🏎️")
+st.set_page_config(page_title="Formula 1 For Fans", layout="wide", page_icon="🏎️")
 
 show_f1_header()
 
