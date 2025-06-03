@@ -264,7 +264,7 @@ def plot_performance(performance, period):
     fig_bar.update_layout(
         barmode='stack',
         title=f'Victories and Podiums per Driver in {period}',
-        xaxis_title='Driver Code',
+        xaxis_title='Drivers',
         yaxis_title='Count',
         title_font_size=16,
         plot_bgcolor='rgba(0,0,0,0)',
