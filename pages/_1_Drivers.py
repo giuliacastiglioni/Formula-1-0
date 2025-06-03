@@ -768,7 +768,11 @@ def display_drivers_by_period():
         if img_url:
             img = load_image_from_url(img_url)
             if img:
-                st.image(img, width=300)
+                st.markdown(
+    f"<div style='text-align: center;'><img src='{img_url}' width='300'/></div>",
+    unsafe_allow_html=True
+)
+
             else:
                 st.warning("Sorry! No image available for this Driver!")
         else:
