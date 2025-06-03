@@ -1020,6 +1020,7 @@ def distrib_of_quali_pos(driver_data):
 def average_quali_pos_per_circuit(driver_data):
     # Sezione 5: Performance per Circuito
     st.subheader("Average Qualifying Position per Circuit")
+    st.write("The lower the bar, the better the Quali performance")
     # Raggruppa per circuito e calcola la posizione media di qualifica
     circuit_perf = driver_data.groupby('name')['position'].mean().reset_index().sort_values('position')
 
@@ -1029,7 +1030,7 @@ def average_quali_pos_per_circuit(driver_data):
                 labels={'position': 'Avg Qualifying Position', 'name': 'Circuit'})
 
     # Inverti l'asse Y per avere il miglior circuito in basso
-    fig5.update_layout(yaxis=dict(autorange="reversed"))
+    #fig5.update_layout(yaxis=dict(autorange="reversed"))
 
     # Mostra il grafico
     st.plotly_chart(fig5, use_container_width=True)
