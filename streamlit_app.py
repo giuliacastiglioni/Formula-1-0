@@ -199,3 +199,5 @@ st.markdown('<div class="image-container"><img src="https://www.repstatic.it/con
 # Separa le immagini e i testi con un po' di spazio
 st.write("<br>", unsafe_allow_html=True)
 
+st.markdown("""Data source: https://ergast.com/mrd/ 
+            """)

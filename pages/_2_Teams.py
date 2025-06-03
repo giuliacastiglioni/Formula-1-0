@@ -365,3 +365,6 @@ total_titles.columns = ['Constructor', 'Titles']
 # Visualizza
 st.dataframe(total_titles)
 
+
+st.markdown("""Data source: https://ergast.com/mrd/ 
+            """)

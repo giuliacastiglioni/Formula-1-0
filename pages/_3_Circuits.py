@@ -276,3 +276,5 @@ if selected_circuit:
     #fig.update_layout(xaxis_title='Driver', yaxis_title='Number of Wins', showlegend=False)
     #st.plotly_chart(fig)
 
+st.markdown("""Data source: https://ergast.com/mrd/ 
+            """)

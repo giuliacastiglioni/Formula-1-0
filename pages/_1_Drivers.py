@@ -1057,3 +1057,6 @@ def visual_quali_data(driver_data):
 
 # Esegui la funzione
 visual_quali_data(driver_data)
+
+st.markdown("""Data source: https://ergast.com/mrd/ 
+            """)
