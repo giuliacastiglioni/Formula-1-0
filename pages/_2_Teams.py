@@ -160,7 +160,8 @@ if selected_teams:
     fig4 = px.bar(points_by_team, x="year", y="points", color="name", barmode="group",
                   labels={"points": "Points", "year": "Year", "name": "Constructor"},
                   title=f"Selected Constructors: Final Points per Season ({start_year}–{end_year})",
-                  color_discrete_sequence=px.colors.sequential.YlOrRd)
+                  #color_discrete_sequence=px.colors.sequential.YlOrRd
+                  )
     fig4.update_layout(template="plotly_dark")
     st.plotly_chart(fig4, use_container_width=True)
     
