@@ -293,6 +293,7 @@ def plot_performance(performance, period):
     #    font=dict(color='white')
     #)
     #st.plotly_chart(fig_bar, use_container_width=True)
+    
 # Funzione per ottenere il nome del pilota
 def get_driver_name(driver_id):
     driver_row = drivers_df.loc[drivers_df['driverId'] == driver_id].iloc[0]
