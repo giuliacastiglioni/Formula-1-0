@@ -1027,7 +1027,9 @@ def average_quali_pos_per_circuit(driver_data):
     # Usa un grafico a barre verticali con circuito sull'asse X e posizione media sull'asse Y
     fig5 = px.bar(circuit_perf, x='name', y='position',
                 title="Average Qualifying Position by Circuit",
-                labels={'position': 'Avg Qualifying Position', 'name': 'Circuit'})
+                labels={'position': 'Avg Qualifying Position', 'name': 'Circuit'},
+                color_discrete_sequence=['orange']
+                )
 
     # Inverti l'asse Y per avere il miglior circuito in basso
     #fig5.update_layout(yaxis=dict(autorange="reversed"))
