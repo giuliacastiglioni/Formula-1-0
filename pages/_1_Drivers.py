@@ -86,7 +86,7 @@ Here you’ll find an overview of all the Formula 1 drivers. We'll include stati
 st.markdown(
     f"""
     <div style='text-align: center;'>
-        <img src="https://i.pinimg.com/originals/94/45/fb/9445fbab033edd19a32449eaaf6553eb.jpg" width="500">
+        <img src="https://pbs.twimg.com/media/F725RCPbMAAAwLt.jpg" width="700">
     </div>
     """,
     unsafe_allow_html=True
