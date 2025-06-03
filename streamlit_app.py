@@ -83,7 +83,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Intestazione dell'app con il nuovo font
-st.markdown("<h1 class='title'> Welcome to the Formula 1 Live Hub </h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title'> Welcome to Formula 1 For Fans </h1>", unsafe_allow_html=True)
 
 
 
