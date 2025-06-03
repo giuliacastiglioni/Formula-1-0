@@ -308,7 +308,8 @@ def analyze_driver_evolution(driver_id):
 
     fig = px.line(avg_position_per_year, x='year', y='positionOrder', markers=True,
                   title=f'Evolution of {driver_name}\'s Performance Over Time',
-                  labels={'positionOrder': 'Average Finish Position', 'year': 'Year'})
+                  labels={'positionOrder': 'Average Finish Position', 'year': 'Year'},
+                  color_discrete_sequence=['orange'])
     fig.update_yaxes(autorange='reversed')  # Inverti asse Y
     st.plotly_chart(fig, use_container_width=True)
 
@@ -339,7 +340,7 @@ def analyze_driver_podiums(driver_id):
     fig = px.bar(podiums_per_year, x='year', y='podiums',
                  title=f'Number of Podium Finishes per Year for {driver_name}',
                  labels={'podiums': 'Number of Podiums', 'year': 'Year'},
-                 color_discrete_sequence=['deepskyblue'])
+                 color_discrete_sequence=['red'])
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -354,7 +355,7 @@ def analyze_driver_qualifying(driver_id):
     fig = px.line(avg_quali_per_year, x='year', y='position', markers=True,
                   title=f'Average Qualifying Position per Year for {driver_name}',
                   labels={'position': 'Average Qualifying Position', 'year': 'Year'},
-                  color_discrete_sequence=['orange'])
+                  color_discrete_sequence=['deepskyblue'])
     fig.update_yaxes(autorange='reversed')  # Inverti asse Y
     st.plotly_chart(fig, use_container_width=True)
 
@@ -791,7 +792,8 @@ def display_drivers_by_period():
             'Number of Podium Finishes per Year',
             'Average qualifying position per year',
             'Average race finish position per year',
-            'Total points per year'
+            'Total points per year',
+            'Comparison with teammates'
         )
     )
 
