@@ -1009,7 +1009,12 @@ def quali_vs_race(driver_data):
 def distrib_of_quali_pos(driver_data):
     # Sezione 4: Distribuzione Posizioni in Qualifica
     st.subheader("Distribution of Qualifying Positions")
-    fig4 = px.histogram(driver_data, x='position', nbins=20, title="Qualifying Position Histogram")
+    fig4 = px.histogram(driver_data, x='position', nbins=20, title="Qualifying Position Histogram", color_discrete_sequence=['deepskyblue'])
+    fig4.update_layout(
+        bargap=0.3,  # aumenta lo spazio tra le colonne
+        xaxis_title="Qualifying Position",
+        yaxis_title="Number of Occurrences",
+    )
     st.plotly_chart(fig4, use_container_width=True)
 
 def average_quali_pos_per_circuit(driver_data):
@@ -1035,7 +1040,6 @@ def visual_quali_data(driver_data):
             "Choose an analysis type",
             (
                 'Qualifying Position Over Time',
-                'Best Qualifying Time Over Time',
                 'Qualifying vs Race Result',
                 'Distribution of Qualifying Positions',
                 'Average Qualifying Position per Circuit',
