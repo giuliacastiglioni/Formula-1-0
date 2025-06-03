@@ -452,7 +452,8 @@ def plot_driver_wins_by_circuit(driver_id):
         names='Circuit',
         values='Wins',
         title=f"Wins by circuit distribution of – {get_driver_name(driver_id)}",
-        hole=0.3
+        hole=0.3,
+        color_discrete_sequence=px.colors.sequential.YlOrRd
     )
     fig.update_traces(textinfo='percent+label')
 
