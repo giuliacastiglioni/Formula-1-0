@@ -708,47 +708,60 @@ def age_analysis(driver_id, races_df, constructors_df):
 
 
 
+import urllib.parse
+
+# ---- Funzione per ottenere immagine da Wikipedia ----
 def get_wikipedia_image_url(page_url):
     try:
-        title = page_url.split('/wiki/')[-1].replace(' ', '_')
-        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
-        headers = {'User-Agent': 'Formula1App/1.0 (https://formula-1-0.streamlit.app/; giuliamaria2000@gmail.com)'}
-        response = requests.get(url, headers=headers)
+        title = page_url.split('/wiki/')[-1]
+        title_encoded = urllib.parse.quote(title)
+        api_url = f"https://en.wikipedia.org/w/api.php?action=query&titles={title_encoded}&prop=pageimages&format=json&pithumbsize=500"
+
+        headers = {
+            'User-Agent': 'Formula1App/1.0 (https://formula-1-0.streamlit.app/; giuliamaria2000@gmail.com)'
+        }
+
+        response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         data = response.json()
-        if 'thumbnail' in data and 'source' in data['thumbnail']:
-            return data['thumbnail']['source']
+
+        pages = data.get("query", {}).get("pages", {})
+        for page in pages.values():
+            if "thumbnail" in page:
+                return page["thumbnail"]["source"]
     except Exception as e:
-        print(f"[Wikipedia REST] Immagine non trovata: {e}")
+        print(f"[Wikipedia API] Immagine non trovata: {e}")
     return None
 
-
-
+# ---- Caricamento immagine da URL ----
 def load_image_from_url(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        img = Image.open(BytesIO(response.content))
-        return img
+        return Image.open(BytesIO(response.content))
     except Exception as e:
         print(f"[Caricamento immagine] Errore: {e}")
         return None
 
+# ---- Funzione principale per Streamlit ----
 def display_drivers_by_period():
     st.title("Drivers statistics")
-    period = st.selectbox("Select the Period", ["1984-2008","2009-2013","2014-2023", "2024"])
+
+    # Selezione periodo
+    period = st.selectbox("Select the Period", ["1984-2008", "2009-2013", "2014-2023", "2024"])
     performance = analyze_performance_by_period(period)
-    analyze_performance_by_period(period)
     plot_performance(performance, period)
     compare_drivers(period)
 
-    st.title(f"Single driver analysis")
-    drivers_list = drivers_df[['driverId', 'surname']].drop_duplicates()
+    st.title("Single driver analysis")
+
+    # Lista piloti
+    drivers_list = drivers_df[['driverId', 'surname', 'url']].drop_duplicates()
     drivers_list['label'] = drivers_list['surname'] + ' (' + drivers_list['driverId'].astype(str) + ')'
     driver_selected = st.selectbox("Select a Driver", drivers_list['label'].values)
     driver_id = int(driver_selected.split('(')[-1].strip(')'))
 
-    # Recupera l'URL Wikipedia del driver
+    # URL Wikipedia
     url = drivers_df.loc[drivers_df['driverId'] == driver_id, 'url'].values
     if len(url) > 0 and url[0]:
         img_url = get_wikipedia_image_url(url[0])
@@ -757,12 +770,13 @@ def display_drivers_by_period():
             if img:
                 st.image(img, width=300)
             else:
-                st.warning("Sorry! No Image available for this Driver!")
+                st.warning("Sorry! No image available for this Driver!")
         else:
-            st.warning("Sorry! No Image available for this Driver!")
+            st.warning("Sorry! No image available for this Driver!")
     else:
-        st.warning("Sorry! No Image available for this Driver!")
+        st.warning("Sorry! No image available for this Driver!")
 
+    # Analisi specifica
     analysis_type = st.radio(
         "Choose an analysis type",
         (
@@ -779,7 +793,7 @@ def display_drivers_by_period():
 
     st.markdown("---")
 
-    # Visualizzazione grafici ecc. come prima...
+    # Visualizzazione grafici 
     if analysis_type == 'Driver Overview':
         driver_timeline(driver_id, results_df, races_df, drivers_df, constructors_df, qualifying_df, year=None)
     elif analysis_type == 'Average race finish position per year':
