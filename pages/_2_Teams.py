@@ -284,6 +284,7 @@ def adjust_color_lightness(color_hex, factor):
 
 # Colori ufficiali team famosi F1
 team_colors = {
+    "Alfa Romeo": "#E10600",
     "Ferrari": "#E10600",
     "Mercedes": "#00D2BE",
     "Red Bull": "#1E41FF",
