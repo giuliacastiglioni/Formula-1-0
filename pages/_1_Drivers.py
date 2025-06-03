@@ -324,7 +324,7 @@ def analyze_driver_wins(driver_id):
     fig = px.bar(wins_per_year, x='year', y='wins',
                  title=f'Number of Wins per Year for {driver_name}',
                  labels={'wins': 'Number of Wins', 'year': 'Year'},
-                 color_discrete_sequence=['green'])
+                 color_discrete_sequence=['gold'])
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -339,7 +339,7 @@ def analyze_driver_podiums(driver_id):
     fig = px.bar(podiums_per_year, x='year', y='podiums',
                  title=f'Number of Podium Finishes per Year for {driver_name}',
                  labels={'podiums': 'Number of Podiums', 'year': 'Year'},
-                 color_discrete_sequence=['blue'])
+                 color_discrete_sequence=['deepskyblue'])
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -369,7 +369,7 @@ def analyze_driver_points(driver_id):
     fig = px.bar(points_per_year, x='year', y='points',
                  title=f'Total Points per Year for {driver_name}',
                  labels={'points': 'Points', 'year': 'Year'},
-                 color_discrete_sequence=['purple'])
+                 color_discrete_sequence=['khaki'])
     st.plotly_chart(fig, use_container_width=True)
 
 # Comparazione con compagni di squadra
