@@ -791,9 +791,9 @@ def display_drivers_by_period():
             'Age vs Wins',
             'Number of Wins per Year',
             'Number of Podium Finishes per Year',
+            'Total points per year',
             'Average qualifying position per year',
             'Average race finish position per year',
-            'Total points per year',
             'Comparison with teammates'
         )
     )
